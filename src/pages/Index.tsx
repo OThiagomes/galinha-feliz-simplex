@@ -1,14 +1,14 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calculator, Zap, Target, TrendingDown } from 'lucide-react';
+import { Calculator, Zap, Target, TrendingDown, Database } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import IngredientForm from '@/components/IngredientForm';
 import RequirementsForm from '@/components/RequirementsForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
 import { Ingredient, NutritionalRequirement, FormulationResult } from '@/types/nutrition';
 import { SimplexSolver } from '@/utils/simplex';
+import { sampleIngredients } from '@/data/sampleIngredients';
 
 const Index = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -29,6 +29,25 @@ const Index = () => {
   });
   const [result, setResult] = useState<FormulationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Load sample data on component mount
+  useEffect(() => {
+    if (ingredients.length === 0) {
+      setIngredients(sampleIngredients);
+      toast({
+        title: "Dados de Exemplo Carregados",
+        description: "Ingredientes padrão foram adicionados. Você pode modificá-los ou adicionar novos.",
+      });
+    }
+  }, []);
+
+  const handleLoadSampleData = () => {
+    setIngredients(sampleIngredients);
+    toast({
+      title: "Dados Recarregados",
+      description: "Ingredientes padrão foram restaurados.",
+    });
+  };
 
   const handleFormulate = async () => {
     if (ingredients.length < 2) {
@@ -115,6 +134,27 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Formulários */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Sample Data Card */}
+            <Card className="bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-200">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-indigo-700">Dados de Exemplo</h3>
+                    <p className="text-sm text-indigo-600">Use ingredientes padrão para testar o sistema</p>
+                  </div>
+                  <Button 
+                    onClick={handleLoadSampleData}
+                    variant="outline"
+                    size="sm"
+                    className="border-indigo-300 text-indigo-700 hover:bg-indigo-100"
+                  >
+                    <Database className="w-4 h-4 mr-2" />
+                    Carregar Dados
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
             <IngredientForm 
               ingredients={ingredients}
               onIngredientsChange={setIngredients}

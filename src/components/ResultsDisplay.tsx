@@ -1,9 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { FormulationResult } from '@/types/nutrition';
-import { CheckCircle, XCircle, DollarSign, Calculator } from 'lucide-react';
+import { CheckCircle, XCircle, DollarSign, Calculator, Download, FileText } from 'lucide-react';
+import { exportToCSV, exportToPDF } from '@/utils/exportUtils';
 
 interface ResultsDisplayProps {
   result: FormulationResult | null;
@@ -66,6 +67,33 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
 
       {result.feasible && (
         <>
+          {/* Export Actions */}
+          <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+            <CardHeader>
+              <CardTitle className="text-purple-700">Exportar Resultados</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button 
+                  onClick={() => exportToCSV(result)}
+                  variant="outline"
+                  className="flex items-center gap-2 border-purple-300 text-purple-700 hover:bg-purple-100"
+                >
+                  <Download className="w-4 h-4" />
+                  Exportar CSV
+                </Button>
+                <Button 
+                  onClick={() => exportToPDF(result)}
+                  variant="outline"
+                  className="flex items-center gap-2 border-purple-300 text-purple-700 hover:bg-purple-100"
+                >
+                  <FileText className="w-4 h-4" />
+                  Imprimir PDF
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Custo Total */}
           <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
             <CardHeader>
@@ -78,6 +106,9 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
               <div className="text-3xl font-bold text-green-600">
                 R$ {result.totalCost.toFixed(4)}/kg
               </div>
+              <p className="text-sm text-green-600 mt-2">
+                Para 1 tonelada: R$ {(result.totalCost * 1000).toFixed(2)}
+              </p>
             </CardContent>
           </Card>
 
