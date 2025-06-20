@@ -1,14 +1,20 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calculator, Zap, Target, TrendingDown, Database } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Calculator, Zap, Target, TrendingDown, Database, Save } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import IngredientForm from '@/components/IngredientForm';
 import RequirementsForm from '@/components/RequirementsForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
+import FormulationHistory from '@/components/FormulationHistory';
+import ValidationAlert from '@/components/ValidationAlert';
 import { Ingredient, NutritionalRequirement, FormulationResult } from '@/types/nutrition';
 import { SimplexSolver } from '@/utils/simplex';
 import { sampleIngredients } from '@/data/sampleIngredients';
+import { useFormulationHistory } from '@/hooks/useFormulationHistory';
 
 const Index = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -29,6 +35,8 @@ const Index = () => {
   });
   const [result, setResult] = useState<FormulationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [formulationName, setFormulationName] = useState('');
+  const { saveFormulation } = useFormulationHistory();
 
   // Load sample data on component mount
   useEffect(() => {
@@ -47,6 +55,18 @@ const Index = () => {
       title: "Dados Recarregados",
       description: "Ingredientes padrão foram restaurados.",
     });
+  };
+
+  const handleSaveFormulation = () => {
+    if (result && result.feasible) {
+      const name = formulationName.trim() || `Formulação ${new Date().toLocaleDateString('pt-BR')}`;
+      saveFormulation(result, name);
+      setFormulationName('');
+      toast({
+        title: "Formulação Salva!",
+        description: `"${name}" foi adicionada ao histórico.`,
+      });
+    }
   };
 
   const handleFormulate = async () => {
@@ -69,7 +89,7 @@ const Index = () => {
       const formulationResult = await new Promise<FormulationResult>((resolve) => {
         setTimeout(() => {
           resolve(solver.solve());
-        }, 1000); // Simular processamento
+        }, 1500); // Simular processamento mais realista
       });
       
       console.log('Resultado da formulação:', formulationResult);
@@ -97,6 +117,13 @@ const Index = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const hasValidationErrors = () => {
+    return ingredients.length < 2 || 
+           ingredients.some(i => !i.name.trim() || i.price <= 0) ||
+           requirements.minProtein >= requirements.maxProtein ||
+           requirements.minEnergy >= requirements.maxEnergy;
   };
 
   return (
@@ -154,6 +181,9 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Validação */}
+            <ValidationAlert ingredients={ingredients} requirements={requirements} />
             
             <IngredientForm 
               ingredients={ingredients}
@@ -175,7 +205,7 @@ const Index = () => {
                   </p>
                   <Button 
                     onClick={handleFormulate}
-                    disabled={isLoading || ingredients.length < 2}
+                    disabled={isLoading || hasValidationErrors()}
                     size="lg"
                     className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-3 text-lg"
                   >
@@ -185,13 +215,40 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Salvar Formulação */}
+            {result && result.feasible && (
+              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <Label htmlFor="formulationName">Nome da Formulação</Label>
+                      <Input
+                        id="formulationName"
+                        value={formulationName}
+                        onChange={(e) => setFormulationName(e.target.value)}
+                        placeholder="Ex: Ração Postura Verão 2024"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleSaveFormulation}
+                      className="bg-green-600 hover:bg-green-700 mt-6"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Salvar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Resultados */}
           <div className="lg:col-span-1">
-            <div className="sticky top-4">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Resultados</h2>
+            <div className="sticky top-4 space-y-6">
+              <h2 className="text-2xl font-bold text-gray-800">Resultados</h2>
               <ResultsDisplay result={result} isLoading={isLoading} />
+              <FormulationHistory />
             </div>
           </div>
         </div>
