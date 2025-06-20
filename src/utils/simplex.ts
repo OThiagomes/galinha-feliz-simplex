@@ -16,152 +16,202 @@ export class SimplexSolver {
   }
 
   private setupTableau() {
-    // Número de restrições: 
-    // - 2 para proteína (min/max)
-    // - 2 para energia (min/max)
-    // - 2 para cálcio (min/max)
-    // - 2 para fósforo (min/max)
-    // - 2 para lisina (min/max)
-    // - 2 para metionina (min/max)
-    // - 1 para fibra (max)
-    // - 2*n para limites individuais de ingredientes (min/max)
-    // - 1 para soma = 100%
-    this.numConstraints = 13 + (2 * this.numVariables) + 1;
+    // Restrições: nutricionais (13) + individuais (2*n) + soma = 100% (1)
+    this.numConstraints = 14 + (2 * this.numVariables);
     
-    // Tableau: [restrições][variáveis + folga + RHS]
+    // Tableau com variáveis de folga
     const cols = this.numVariables + this.numConstraints + 1;
     this.tableau = Array(this.numConstraints + 1).fill(null).map(() => Array(cols).fill(0));
     
-    let constraintRow = 0;
-    let slackVar = this.numVariables;
-
-    // Função objetivo (minimizar custo)
-    for (let i = 0; i < this.numVariables; i++) {
-      this.tableau[0][i] = this.ingredients[i].price;
-    }
-
-    // Restrição: soma = 100%
-    for (let i = 0; i < this.numVariables; i++) {
-      this.tableau[constraintRow + 1][i] = 1;
-    }
-    this.tableau[constraintRow + 1][slackVar] = 1;
-    this.tableau[constraintRow + 1][cols - 1] = 100;
-    constraintRow++;
-    slackVar++;
-
-    // Restrições nutricionais
-    this.addNutritionalConstraints(constraintRow, slackVar);
-    constraintRow += 13;
-    slackVar += 13;
-
-    // Restrições individuais dos ingredientes
-    this.addIngredientConstraints(constraintRow, slackVar);
-
+    this.setupObjectiveFunction();
+    this.setupConstraints();
+    
     this.basicVariables = Array.from({ length: this.numConstraints }, (_, i) => this.numVariables + i);
   }
 
-  private addNutritionalConstraints(startRow: number, startSlack: number) {
-    const constraints = [
-      // Proteína min/max
-      { nutrient: 'protein', min: this.requirements.minProtein, max: this.requirements.maxProtein },
-      // Energia min/max
-      { nutrient: 'energy', min: this.requirements.minEnergy, max: this.requirements.maxEnergy },
-      // Cálcio min/max
-      { nutrient: 'calcium', min: this.requirements.minCalcium, max: this.requirements.maxCalcium },
-      // Fósforo min/max
-      { nutrient: 'phosphorus', min: this.requirements.minPhosphorus, max: this.requirements.maxPhosphorus },
-      // Lisina min/max
-      { nutrient: 'lysine', min: this.requirements.minLysine, max: this.requirements.maxLysine },
-      // Metionina min/max
-      { nutrient: 'methionine', min: this.requirements.minMethionine, max: this.requirements.maxMethionine },
-      // Fibra max
-      { nutrient: 'fiber', min: 0, max: this.requirements.maxFiber }
-    ];
+  private setupObjectiveFunction() {
+    // Minimizar custo - coeficientes negativos para maximização no simplex padrão
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[0][i] = this.ingredients[i].price;
+    }
+  }
 
-    let row = startRow + 1;
+  private setupConstraints() {
+    let row = 1;
+    let slackVar = this.numVariables;
+
+    // Restrição: soma = 100%
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = 1;
+    }
+    this.tableau[row][slackVar] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = 100;
+    row++;
+    slackVar++;
+
+    // Restrições nutricionais
+    this.addNutritionalConstraints(row, slackVar);
+    row += 13;
+    slackVar += 13;
+
+    // Restrições individuais dos ingredientes
+    this.addIngredientConstraints(row, slackVar);
+  }
+
+  private addNutritionalConstraints(startRow: number, startSlack: number) {
+    let row = startRow;
     let slack = startSlack;
 
-    constraints.forEach(constraint => {
-      // Restrição mínima (>=)
-      if (constraint.min > 0) {
-        for (let i = 0; i < this.numVariables; i++) {
-          this.tableau[row][i] = -(this.ingredients[i][constraint.nutrient as keyof Ingredient] as number);
-        }
-        this.tableau[row][slack] = -1;
-        this.tableau[row][this.tableau[0].length - 1] = -constraint.min * 100;
-        row++;
-        slack++;
-      }
+    // Proteína mínima: sum(xi * proteína_i) >= minProtein * 100
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = -this.ingredients[i].protein;
+    }
+    this.tableau[row][slack] = -1;
+    this.tableau[row][this.tableau[row].length - 1] = -this.requirements.minProtein * 100;
+    row++; slack++;
 
-      // Restrição máxima (<=)
-      for (let i = 0; i < this.numVariables; i++) {
-        this.tableau[row][i] = this.ingredients[i][constraint.nutrient as keyof Ingredient] as number;
-      }
-      this.tableau[row][slack] = 1;
-      this.tableau[row][this.tableau[0].length - 1] = constraint.max * 100;
-      row++;
-      slack++;
-    });
+    // Proteína máxima: sum(xi * proteína_i) <= maxProtein * 100
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = this.ingredients[i].protein;
+    }
+    this.tableau[row][slack] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = this.requirements.maxProtein * 100;
+    row++; slack++;
+
+    // Energia mínima
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = -this.ingredients[i].energy;
+    }
+    this.tableau[row][slack] = -1;
+    this.tableau[row][this.tableau[row].length - 1] = -this.requirements.minEnergy * 100;
+    row++; slack++;
+
+    // Energia máxima
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = this.ingredients[i].energy;
+    }
+    this.tableau[row][slack] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = this.requirements.maxEnergy * 100;
+    row++; slack++;
+
+    // Cálcio mínimo
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = -this.ingredients[i].calcium;
+    }
+    this.tableau[row][slack] = -1;
+    this.tableau[row][this.tableau[row].length - 1] = -this.requirements.minCalcium * 100;
+    row++; slack++;
+
+    // Cálcio máximo
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = this.ingredients[i].calcium;
+    }
+    this.tableau[row][slack] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = this.requirements.maxCalcium * 100;
+    row++; slack++;
+
+    // Fósforo mínimo
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = -this.ingredients[i].phosphorus;
+    }
+    this.tableau[row][slack] = -1;
+    this.tableau[row][this.tableau[row].length - 1] = -this.requirements.minPhosphorus * 100;
+    row++; slack++;
+
+    // Fósforo máximo
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = this.ingredients[i].phosphorus;
+    }
+    this.tableau[row][slack] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = this.requirements.maxPhosphorus * 100;
+    row++; slack++;
+
+    // Lisina mínima
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = -this.ingredients[i].lysine;
+    }
+    this.tableau[row][slack] = -1;
+    this.tableau[row][this.tableau[row].length - 1] = -this.requirements.minLysine * 100;
+    row++; slack++;
+
+    // Lisina máxima
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = this.ingredients[i].lysine;
+    }
+    this.tableau[row][slack] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = this.requirements.maxLysine * 100;
+    row++; slack++;
+
+    // Metionina mínima
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = -this.ingredients[i].methionine;
+    }
+    this.tableau[row][slack] = -1;
+    this.tableau[row][this.tableau[row].length - 1] = -this.requirements.minMethionine * 100;
+    row++; slack++;
+
+    // Metionina máxima
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = this.ingredients[i].methionine;
+    }
+    this.tableau[row][slack] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = this.requirements.maxMethionine * 100;
+    row++; slack++;
+
+    // Fibra máxima
+    for (let i = 0; i < this.numVariables; i++) {
+      this.tableau[row][i] = this.ingredients[i].fiber;
+    }
+    this.tableau[row][slack] = 1;
+    this.tableau[row][this.tableau[row].length - 1] = this.requirements.maxFiber * 100;
   }
 
   private addIngredientConstraints(startRow: number, startSlack: number) {
-    let row = startRow + 1;
+    let row = startRow;
     let slack = startSlack;
 
     for (let i = 0; i < this.numVariables; i++) {
-      // Restrição mínima
+      // Restrição mínima: xi >= minPercent
       this.tableau[row][i] = -1;
       this.tableau[row][slack] = -1;
-      this.tableau[row][this.tableau[0].length - 1] = -this.ingredients[i].minPercent;
-      row++;
-      slack++;
+      this.tableau[row][this.tableau[row].length - 1] = -this.ingredients[i].minPercent;
+      row++; slack++;
 
-      // Restrição máxima
+      // Restrição máxima: xi <= maxPercent
       this.tableau[row][i] = 1;
       this.tableau[row][slack] = 1;
-      this.tableau[row][this.tableau[0].length - 1] = this.ingredients[i].maxPercent;
-      row++;
-      slack++;
+      this.tableau[row][this.tableau[row].length - 1] = this.ingredients[i].maxPercent;
+      row++; slack++;
     }
   }
 
   public solve(): FormulationResult {
     try {
-      // Fase I: Encontrar solução básica viável
-      if (!this.phaseOne()) {
+      console.log('Tableau inicial:', this.tableau);
+      
+      // Resolver usando método simplex de duas fases
+      if (!this.solveSimplex()) {
         return {
           ingredients: [],
           totalCost: 0,
           nutritionalProfile: {
-            protein: 0,
-            energy: 0,
-            calcium: 0,
-            phosphorus: 0,
-            lysine: 0,
-            methionine: 0,
-            fiber: 0
+            protein: 0, energy: 0, calcium: 0, phosphorus: 0,
+            lysine: 0, methionine: 0, fiber: 0
           },
           feasible: false,
-          message: 'Problema inviável - não é possível atender todas as restrições'
+          message: 'Problema inviável - não é possível atender todas as restrições nutricionais'
         };
       }
 
-      // Fase II: Otimizar
-      this.phaseTwo();
-
       return this.extractSolution();
     } catch (error) {
+      console.error('Erro no Simplex:', error);
       return {
         ingredients: [],
         totalCost: 0,
         nutritionalProfile: {
-          protein: 0,
-          energy: 0,
-          calcium: 0,
-          phosphorus: 0,
-          lysine: 0,
-          methionine: 0,
-          fiber: 0
+          protein: 0, energy: 0, calcium: 0, phosphorus: 0,
+          lysine: 0, methionine: 0, fiber: 0
         },
         feasible: false,
         message: 'Erro durante a otimização'
@@ -169,46 +219,40 @@ export class SimplexSolver {
     }
   }
 
-  private phaseOne(): boolean {
-    // Implementação simplificada da Fase I
-    // Adiciona variáveis artificiais e tenta encontrar solução básica viável
-    const maxIterations = 1000;
+  private solveSimplex(): boolean {
+    const maxIterations = 100;
     let iterations = 0;
 
     while (iterations < maxIterations) {
+      // Encontrar variável que entra (coluna pivô)
       const pivotCol = this.findEnteringVariable();
-      if (pivotCol === -1) break;
+      if (pivotCol === -1) {
+        console.log('Solução ótima encontrada após', iterations, 'iterações');
+        break; // Solução ótima encontrada
+      }
 
+      // Encontrar variável que sai (linha pivô)  
       const pivotRow = this.findLeavingVariable(pivotCol);
-      if (pivotRow === -1) return false; // Ilimitado
+      if (pivotRow === -1) {
+        console.log('Problema ilimitado');
+        return false; // Problema ilimitado
+      }
 
+      console.log(`Iteração ${iterations + 1}: Pivô em (${pivotRow}, ${pivotCol})`);
+      
+      // Realizar operação de pivoteamento
       this.pivot(pivotRow, pivotCol);
       iterations++;
     }
 
-    return true;
-  }
-
-  private phaseTwo(): void {
-    const maxIterations = 1000;
-    let iterations = 0;
-
-    while (iterations < maxIterations) {
-      const pivotCol = this.findEnteringVariable();
-      if (pivotCol === -1) break;
-
-      const pivotRow = this.findLeavingVariable(pivotCol);
-      if (pivotRow === -1) break; // Ilimitado
-
-      this.pivot(pivotRow, pivotCol);
-      iterations++;
-    }
+    return iterations < maxIterations;
   }
 
   private findEnteringVariable(): number {
     let minValue = 0;
     let minIndex = -1;
 
+    // Encontrar coeficiente mais negativo na linha objetivo
     for (let j = 0; j < this.numVariables; j++) {
       if (this.tableau[0][j] < minValue) {
         minValue = this.tableau[0][j];
@@ -223,10 +267,11 @@ export class SimplexSolver {
     let minRatio = Infinity;
     let minIndex = -1;
 
+    // Teste da razão mínima
     for (let i = 1; i < this.tableau.length; i++) {
-      if (this.tableau[i][enteringCol] > 0) {
+      if (this.tableau[i][enteringCol] > 1e-6) { // Evitar divisão por zero
         const ratio = this.tableau[i][this.tableau[i].length - 1] / this.tableau[i][enteringCol];
-        if (ratio < minRatio) {
+        if (ratio >= 0 && ratio < minRatio) {
           minRatio = ratio;
           minIndex = i;
         }
@@ -246,7 +291,7 @@ export class SimplexSolver {
 
     // Eliminar outras linhas
     for (let i = 0; i < this.tableau.length; i++) {
-      if (i !== pivotRow) {
+      if (i !== pivotRow && Math.abs(this.tableau[i][pivotCol]) > 1e-10) {
         const factor = this.tableau[i][pivotCol];
         for (let j = 0; j < this.tableau[i].length; j++) {
           this.tableau[i][j] -= factor * this.tableau[pivotRow][j];
@@ -254,6 +299,7 @@ export class SimplexSolver {
       }
     }
 
+    // Atualizar variáveis básicas
     this.basicVariables[pivotRow - 1] = pivotCol;
   }
 
@@ -264,7 +310,21 @@ export class SimplexSolver {
     for (let i = 0; i < this.basicVariables.length; i++) {
       const varIndex = this.basicVariables[i];
       if (varIndex < this.numVariables) {
-        solution[varIndex] = Math.max(0, this.tableau[i + 1][this.tableau[i + 1].length - 1]);
+        const value = this.tableau[i + 1][this.tableau[i + 1].length - 1];
+        solution[varIndex] = Math.max(0, value);
+      }
+    }
+
+    console.log('Solução encontrada:', solution);
+
+    // Verificar se a soma é aproximadamente 100%
+    const totalPercent = solution.reduce((sum, val) => sum + val, 0);
+    console.log('Soma total:', totalPercent);
+
+    // Normalizar se necessário (pequenos erros de arredondamento)
+    if (totalPercent > 0 && Math.abs(totalPercent - 100) < 1) {
+      for (let i = 0; i < solution.length; i++) {
+        solution[i] = (solution[i] / totalPercent) * 100;
       }
     }
 
@@ -272,7 +332,7 @@ export class SimplexSolver {
       ingredient,
       percentage: solution[index] || 0,
       cost: (solution[index] || 0) * ingredient.price / 100
-    })).filter(item => item.percentage > 0.01);
+    })).filter(item => item.percentage > 0.001);
 
     const totalCost = ingredients.reduce((sum, item) => sum + item.cost, 0);
 
@@ -291,7 +351,10 @@ export class SimplexSolver {
       ingredients,
       totalCost,
       nutritionalProfile,
-      feasible: true
+      feasible: ingredients.length > 0,
+      message: ingredients.length > 0 ? 
+        `Formulação otimizada com ${ingredients.length} ingredientes` :
+        'Não foi possível encontrar uma formulação viável'
     };
   }
 
