@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -124,10 +125,10 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                     <div className="flex-1">
                       <h4 className="font-semibold text-orange-700">{item.ingredient.name}</h4>
                       <div className="text-sm text-gray-600 grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
-                        <span>Proteína: {item.ingredient.protein}%</span>
-                        <span>Energia: {item.ingredient.energy} kcal/kg</span>
+                        <span>Proteína: {item.ingredient.crudeProtein}%</span>
+                        <span>Energia: {item.ingredient.metabolizableEnergy} kcal/kg</span>
                         <span>Cálcio: {item.ingredient.calcium}%</span>
-                        <span>Preço: R$ {item.ingredient.price.toFixed(2)}/kg</span>
+                        <span>Preço: R$ {item.ingredient.currentPrice.toFixed(2)}/kg</span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -153,11 +154,11 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
                   <h4 className="font-semibold text-blue-700">Proteína Bruta</h4>
-                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.protein.toFixed(2)}%</p>
+                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.crudeProtein.toFixed(2)}%</p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
                   <h4 className="font-semibold text-blue-700">Energia Metabolizável</h4>
-                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.energy.toFixed(0)} kcal/kg</p>
+                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.metabolizableEnergy.toFixed(0)} kcal/kg</p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
                   <h4 className="font-semibold text-blue-700">Cálcio</h4>
@@ -165,7 +166,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
                   <h4 className="font-semibold text-blue-700">Fósforo</h4>
-                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.phosphorus.toFixed(2)}%</p>
+                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.availablePhosphorus.toFixed(2)}%</p>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
                   <h4 className="font-semibold text-blue-700">Lisina</h4>
@@ -177,7 +178,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, isLoading }) =>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
                   <h4 className="font-semibold text-blue-700">Fibra Bruta</h4>
-                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.fiber.toFixed(2)}%</p>
+                  <p className="text-2xl font-bold text-blue-600">{result.nutritionalProfile.crudeFiber.toFixed(2)}%</p>
                 </div>
               </div>
             </CardContent>

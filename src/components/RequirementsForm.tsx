@@ -21,19 +21,21 @@ const RequirementsForm: React.FC<RequirementsFormProps> = ({ requirements, onReq
 
   const loadDefaultRequirements = () => {
     const defaultReqs: NutritionalRequirement = {
-      minProtein: 16.0,
-      maxProtein: 18.0,
-      minEnergy: 2750,
-      maxEnergy: 2850,
+      profileName: 'Poedeiras Comerciais - Padrão',
+      phase: 'peak-lay',
+      minMetabolizableEnergy: 2750,
+      maxMetabolizableEnergy: 2850,
+      minCrudeProtein: 16.0,
+      maxCrudeProtein: 18.0,
       minCalcium: 3.8,
       maxCalcium: 4.2,
-      minPhosphorus: 0.35,
-      maxPhosphorus: 0.45,
+      minAvailablePhosphorus: 0.35,
+      maxAvailablePhosphorus: 0.45,
       minLysine: 0.75,
       maxLysine: 0.85,
       minMethionine: 0.38,
       maxMethionine: 0.45,
-      maxFiber: 6.0
+      maxCrudeFiber: 6.0
     };
     
     onRequirementsChange(defaultReqs);
@@ -61,23 +63,23 @@ const RequirementsForm: React.FC<RequirementsFormProps> = ({ requirements, onReq
             <h4 className="font-semibold text-orange-700">Proteína Bruta (%)</h4>
             <div className="space-y-2">
               <div>
-                <Label htmlFor="minProtein">Mínimo</Label>
+                <Label htmlFor="minCrudeProtein">Mínimo</Label>
                 <Input
-                  id="minProtein"
+                  id="minCrudeProtein"
                   type="number"
                   step="0.1"
-                  value={requirements.minProtein}
-                  onChange={(e) => updateRequirement('minProtein', parseFloat(e.target.value) || 0)}
+                  value={requirements.minCrudeProtein}
+                  onChange={(e) => updateRequirement('minCrudeProtein', parseFloat(e.target.value) || 0)}
                 />
               </div>
               <div>
-                <Label htmlFor="maxProtein">Máximo</Label>
+                <Label htmlFor="maxCrudeProtein">Máximo</Label>
                 <Input
-                  id="maxProtein"
+                  id="maxCrudeProtein"
                   type="number"
                   step="0.1"
-                  value={requirements.maxProtein}
-                  onChange={(e) => updateRequirement('maxProtein', parseFloat(e.target.value) || 0)}
+                  value={requirements.maxCrudeProtein}
+                  onChange={(e) => updateRequirement('maxCrudeProtein', parseFloat(e.target.value) || 0)}
                 />
               </div>
             </div>
@@ -88,21 +90,21 @@ const RequirementsForm: React.FC<RequirementsFormProps> = ({ requirements, onReq
             <h4 className="font-semibold text-orange-700">Energia Metabolizável (kcal/kg)</h4>
             <div className="space-y-2">
               <div>
-                <Label htmlFor="minEnergy">Mínimo</Label>
+                <Label htmlFor="minMetabolizableEnergy">Mínimo</Label>
                 <Input
-                  id="minEnergy"
+                  id="minMetabolizableEnergy"
                   type="number"
-                  value={requirements.minEnergy}
-                  onChange={(e) => updateRequirement('minEnergy', parseInt(e.target.value) || 0)}
+                  value={requirements.minMetabolizableEnergy}
+                  onChange={(e) => updateRequirement('minMetabolizableEnergy', parseInt(e.target.value) || 0)}
                 />
               </div>
               <div>
-                <Label htmlFor="maxEnergy">Máximo</Label>
+                <Label htmlFor="maxMetabolizableEnergy">Máximo</Label>
                 <Input
-                  id="maxEnergy"
+                  id="maxMetabolizableEnergy"
                   type="number"
-                  value={requirements.maxEnergy}
-                  onChange={(e) => updateRequirement('maxEnergy', parseInt(e.target.value) || 0)}
+                  value={requirements.maxMetabolizableEnergy}
+                  onChange={(e) => updateRequirement('maxMetabolizableEnergy', parseInt(e.target.value) || 0)}
                 />
               </div>
             </div>
@@ -140,23 +142,23 @@ const RequirementsForm: React.FC<RequirementsFormProps> = ({ requirements, onReq
             <h4 className="font-semibold text-orange-700">Fósforo Disponível (%)</h4>
             <div className="space-y-2">
               <div>
-                <Label htmlFor="minPhosphorus">Mínimo</Label>
+                <Label htmlFor="minAvailablePhosphorus">Mínimo</Label>
                 <Input
-                  id="minPhosphorus"
+                  id="minAvailablePhosphorus"
                   type="number"
                   step="0.01"
-                  value={requirements.minPhosphorus}
-                  onChange={(e) => updateRequirement('minPhosphorus', parseFloat(e.target.value) || 0)}
+                  value={requirements.minAvailablePhosphorus}
+                  onChange={(e) => updateRequirement('minAvailablePhosphorus', parseFloat(e.target.value) || 0)}
                 />
               </div>
               <div>
-                <Label htmlFor="maxPhosphorus">Máximo</Label>
+                <Label htmlFor="maxAvailablePhosphorus">Máximo</Label>
                 <Input
-                  id="maxPhosphorus"
+                  id="maxAvailablePhosphorus"
                   type="number"
                   step="0.01"
-                  value={requirements.maxPhosphorus}
-                  onChange={(e) => updateRequirement('maxPhosphorus', parseFloat(e.target.value) || 0)}
+                  value={requirements.maxAvailablePhosphorus}
+                  onChange={(e) => updateRequirement('maxAvailablePhosphorus', parseFloat(e.target.value) || 0)}
                 />
               </div>
             </div>
@@ -221,13 +223,13 @@ const RequirementsForm: React.FC<RequirementsFormProps> = ({ requirements, onReq
             <h4 className="font-semibold text-orange-700">Fibra Bruta (% máx)</h4>
             <div className="space-y-2">
               <div>
-                <Label htmlFor="maxFiber">Máximo</Label>
+                <Label htmlFor="maxCrudeFiber">Máximo</Label>
                 <Input
-                  id="maxFiber"
+                  id="maxCrudeFiber"
                   type="number"
                   step="0.1"
-                  value={requirements.maxFiber}
-                  onChange={(e) => updateRequirement('maxFiber', parseFloat(e.target.value) || 0)}
+                  value={requirements.maxCrudeFiber}
+                  onChange={(e) => updateRequirement('maxCrudeFiber', parseFloat(e.target.value) || 0)}
                 />
               </div>
             </div>

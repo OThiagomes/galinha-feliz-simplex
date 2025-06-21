@@ -55,19 +55,19 @@ const NutritionalReport: React.FC<NutritionalReportProps> = ({ result, requireme
   const nutrients = [
     {
       name: 'Proteína Bruta',
-      value: result.nutritionalProfile.protein,
-      min: requirements.minProtein,
-      max: requirements.maxProtein,
+      value: result.nutritionalProfile.crudeProtein,
+      min: requirements.minCrudeProtein,
+      max: requirements.maxCrudeProtein,
       unit: '%',
-      status: checkNutrient(result.nutritionalProfile.protein, requirements.minProtein, requirements.maxProtein)
+      status: checkNutrient(result.nutritionalProfile.crudeProtein, requirements.minCrudeProtein, requirements.maxCrudeProtein)
     },
     {
       name: 'Energia Metabolizável',
-      value: result.nutritionalProfile.energy,
-      min: requirements.minEnergy,
-      max: requirements.maxEnergy,
+      value: result.nutritionalProfile.metabolizableEnergy,
+      min: requirements.minMetabolizableEnergy,
+      max: requirements.maxMetabolizableEnergy,
       unit: 'kcal/kg',
-      status: checkNutrient(result.nutritionalProfile.energy, requirements.minEnergy, requirements.maxEnergy)
+      status: checkNutrient(result.nutritionalProfile.metabolizableEnergy, requirements.minMetabolizableEnergy, requirements.maxMetabolizableEnergy)
     },
     {
       name: 'Cálcio',
@@ -79,11 +79,11 @@ const NutritionalReport: React.FC<NutritionalReportProps> = ({ result, requireme
     },
     {
       name: 'Fósforo',
-      value: result.nutritionalProfile.phosphorus,
-      min: requirements.minPhosphorus,
-      max: requirements.maxPhosphorus,
+      value: result.nutritionalProfile.availablePhosphorus,
+      min: requirements.minAvailablePhosphorus,
+      max: requirements.maxAvailablePhosphorus,
       unit: '%',
-      status: checkNutrient(result.nutritionalProfile.phosphorus, requirements.minPhosphorus, requirements.maxPhosphorus)
+      status: checkNutrient(result.nutritionalProfile.availablePhosphorus, requirements.minAvailablePhosphorus, requirements.maxAvailablePhosphorus)
     },
     {
       name: 'Lisina',
@@ -103,11 +103,11 @@ const NutritionalReport: React.FC<NutritionalReportProps> = ({ result, requireme
     },
     {
       name: 'Fibra Bruta',
-      value: result.nutritionalProfile.fiber,
+      value: result.nutritionalProfile.crudeFiber,
       min: 0,
-      max: requirements.maxFiber,
+      max: requirements.maxCrudeFiber || 8,
       unit: '%',
-      status: result.nutritionalProfile.fiber <= requirements.maxFiber ? 'optimal' : 'warning'
+      status: result.nutritionalProfile.crudeFiber <= (requirements.maxCrudeFiber || 8) ? 'optimal' : 'warning'
     }
   ];
 

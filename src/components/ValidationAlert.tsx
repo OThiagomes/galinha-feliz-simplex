@@ -22,35 +22,35 @@ const ValidationAlert: React.FC<ValidationAlertProps> = ({ ingredients, requirem
     if (!ingredient.name.trim()) {
       validationErrors.push(`Ingrediente ${index + 1}: Nome é obrigatório`);
     }
-    if (ingredient.price <= 0) {
+    if (ingredient.currentPrice <= 0) {
       validationErrors.push(`${ingredient.name}: Preço deve ser maior que zero`);
     }
-    if (ingredient.minPercent > ingredient.maxPercent) {
+    if (ingredient.minInclusion > ingredient.maxInclusion) {
       validationErrors.push(`${ingredient.name}: Porcentagem mínima não pode ser maior que a máxima`);
     }
-    if (ingredient.maxPercent > 100) {
+    if (ingredient.maxInclusion > 100) {
       validationWarnings.push(`${ingredient.name}: Porcentagem máxima muito alta (>100%)`);
     }
   });
 
   // Validar exigências nutricionais
-  if (requirements.minProtein >= requirements.maxProtein) {
+  if (requirements.minCrudeProtein >= requirements.maxCrudeProtein) {
     validationErrors.push('Proteína: Valor mínimo deve ser menor que o máximo');
   }
-  if (requirements.minEnergy >= requirements.maxEnergy) {
+  if (requirements.minMetabolizableEnergy >= requirements.maxMetabolizableEnergy) {
     validationErrors.push('Energia: Valor mínimo deve ser menor que o máximo');
   }
   if (requirements.minCalcium >= requirements.maxCalcium) {
     validationErrors.push('Cálcio: Valor mínimo deve ser menor que o máximo');
   }
-  if (requirements.minPhosphorus >= requirements.maxPhosphorus) {
+  if (requirements.minAvailablePhosphorus >= requirements.maxAvailablePhosphorus) {
     validationErrors.push('Fósforo: Valor mínimo deve ser menor que o máximo');
   }
 
   // Verificar se os ingredientes podem atender às exigências
-  const maxProtein = Math.max(...ingredients.map(i => i.protein));
-  const minProtein = Math.min(...ingredients.map(i => i.protein));
-  if (maxProtein < requirements.minProtein) {
+  const maxProtein = Math.max(...ingredients.map(i => i.crudeProtein));
+  const minProtein = Math.min(...ingredients.map(i => i.crudeProtein));
+  if (maxProtein < requirements.minCrudeProtein) {
     validationWarnings.push('Nenhum ingrediente atende à exigência mínima de proteína');
   }
 

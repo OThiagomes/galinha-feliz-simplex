@@ -59,12 +59,12 @@ const PriceAlert: React.FC<PriceAlertProps> = ({ ingredients }) => {
   const getActiveAlerts = () => {
     return alerts.filter(alert => alert.enabled).map(alert => {
       const ingredient = ingredients.find(ing => ing.id === alert.ingredientId);
-      if (ingredient && ingredient.price > alert.maxPrice) {
+      if (ingredient && ingredient.currentPrice > alert.maxPrice) {
         return {
           ...alert,
           ingredientName: ingredient.name,
-          currentPrice: ingredient.price,
-          difference: ingredient.price - alert.maxPrice
+          currentPrice: ingredient.currentPrice,
+          difference: ingredient.currentPrice - alert.maxPrice
         };
       }
       return null;
@@ -150,8 +150,8 @@ const PriceAlert: React.FC<PriceAlertProps> = ({ ingredients }) => {
                         Máx: R$ {alert.maxPrice.toFixed(4)}/kg
                       </span>
                       {ingredient && (
-                        <span className={`text-sm ml-2 ${ingredient.price > alert.maxPrice ? 'text-red-600 font-bold' : 'text-green-600'}`}>
-                          Atual: R$ {ingredient.price.toFixed(4)}/kg
+                        <span className={`text-sm ml-2 ${ingredient.currentPrice > alert.maxPrice ? 'text-red-600 font-bold' : 'text-green-600'}`}>
+                          Atual: R$ {ingredient.currentPrice.toFixed(4)}/kg
                         </span>
                       )}
                     </div>
