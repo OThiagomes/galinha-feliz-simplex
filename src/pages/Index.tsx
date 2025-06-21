@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calculator, Zap, Target, TrendingDown, Database, Save } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Calculator, Zap, Target, TrendingDown, Database, Save, Settings } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import IngredientForm from '@/components/IngredientForm';
 import RequirementsForm from '@/components/RequirementsForm';
@@ -39,6 +40,7 @@ const Index = () => {
   const [result, setResult] = useState<FormulationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formulationName, setFormulationName] = useState('');
+  const [activeSection, setActiveSection] = useState<'ingredients' | 'requirements' | 'results'>('ingredients');
   const { saveFormulation } = useFormulationHistory();
 
   // Load sample data on component mount
@@ -47,7 +49,7 @@ const Index = () => {
       setIngredients(sampleIngredients);
       toast({
         title: "Dados de Exemplo Carregados",
-        description: "Ingredientes padrão foram adicionados. Você pode modificá-los ou adicionar novos.",
+        description: "Ingredientes padrão foram adicionados. Você pode modificá-los conforme necessário.",
       });
     }
   }, []);
@@ -130,56 +132,71 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-yellow-50 to-orange-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-orange-500 text-white py-8 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Formulador de Ração - Poedeiras
-            </h1>
-            <p className="text-xl md:text-2xl mb-6 opacity-90">
-              Otimização de custos com algoritmo Simplex
-            </p>
-            <div className="flex flex-wrap justify-center gap-6 text-lg">
-              <div className="flex items-center gap-2">
-                <Target className="w-6 h-6" />
-                <span>Atende Exigências NRC</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <TrendingDown className="w-6 h-6" />
-                <span>Minimiza Custos</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="w-6 h-6" />
-                <span>Resultados Instantâneos</span>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-indigo-50">
+      {/* Header Simplificado */}
+      <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-6 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            Formulador de Ração - Poedeiras
+          </h1>
+          <p className="text-lg opacity-90">
+            Sistema profissional de otimização nutricional
+          </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Formulários */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Sample Data Card */}
-            <Card className="bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-200">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          {/* Seção Principal de Formulação */}
+          <div className="xl:col-span-3 space-y-6">
+            {/* Navegação por Seções */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={activeSection === 'ingredients' ? 'default' : 'outline'}
+                    onClick={() => setActiveSection('ingredients')}
+                    size="sm"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Ingredientes
+                  </Button>
+                  <Button
+                    variant={activeSection === 'requirements' ? 'default' : 'outline'}
+                    onClick={() => setActiveSection('requirements')}
+                    size="sm"
+                  >
+                    <Target className="w-4 h-4 mr-2" />
+                    Exigências
+                  </Button>
+                  <Button
+                    variant={activeSection === 'results' ? 'default' : 'outline'}
+                    onClick={() => setActiveSection('results')}
+                    size="sm"
+                  >
+                    <Calculator className="w-4 h-4 mr-2" />
+                    Resultados
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dados de Exemplo - Compacto */}
+            <Card className="bg-blue-50 border-blue-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-indigo-700">Dados de Exemplo</h3>
-                    <p className="text-sm text-indigo-600">Use ingredientes padrão para testar o sistema</p>
+                    <h3 className="font-medium text-blue-700">Dados Padrão</h3>
+                    <p className="text-sm text-blue-600">Ingredientes comuns para formulação</p>
                   </div>
                   <Button 
                     onClick={handleLoadSampleData}
                     variant="outline"
                     size="sm"
-                    className="border-indigo-300 text-indigo-700 hover:bg-indigo-100"
+                    className="border-blue-300 text-blue-700 hover:bg-blue-100"
                   >
                     <Database className="w-4 h-4 mr-2" />
-                    Carregar Dados
+                    Carregar
                   </Button>
                 </div>
               </CardContent>
@@ -187,119 +204,117 @@ const Index = () => {
 
             {/* Validação */}
             <ValidationAlert ingredients={ingredients} requirements={requirements} />
-            
-            <IngredientForm 
-              ingredients={ingredients}
-              onIngredientsChange={setIngredients}
-            />
-            
-            <RequirementsForm
-              requirements={requirements}
-              onRequirementsChange={setRequirements}
-            />
-            
-            {/* Botão de Formulação */}
-            <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
-              <CardContent className="p-6">
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold mb-4">Pronto para Formular?</h3>
-                  <p className="mb-6 opacity-90">
-                    O algoritmo Simplex irá otimizar sua formulação considerando todas as restrições nutricionais
-                  </p>
-                  <Button 
-                    onClick={handleFormulate}
-                    disabled={isLoading || hasValidationErrors()}
-                    size="lg"
-                    className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-3 text-lg"
-                  >
-                    <Calculator className="w-6 h-6 mr-2" />
-                    {isLoading ? 'Formulando...' : 'Formular Ração'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* Salvar Formulação */}
-            {result && result.feasible && (
-              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <Label htmlFor="formulationName">Nome da Formulação</Label>
-                      <Input
-                        id="formulationName"
-                        value={formulationName}
-                        onChange={(e) => setFormulationName(e.target.value)}
-                        placeholder="Ex: Ração Postura Verão 2024"
-                      />
-                    </div>
+            {/* Conteúdo das Seções */}
+            {activeSection === 'ingredients' && (
+              <IngredientForm 
+                ingredients={ingredients}
+                onIngredientsChange={setIngredients}
+              />
+            )}
+
+            {activeSection === 'requirements' && (
+              <RequirementsForm
+                requirements={requirements}
+                onRequirementsChange={setRequirements}
+              />
+            )}
+
+            {activeSection === 'results' && (
+              <div className="space-y-6">
+                {/* Botão de Formulação */}
+                <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                  <CardContent className="p-6 text-center">
+                    <h3 className="text-xl font-bold mb-3">Formular Ração</h3>
+                    <p className="mb-4 opacity-90">
+                      Otimização com algoritmo Simplex
+                    </p>
                     <Button 
-                      onClick={handleSaveFormulation}
-                      className="bg-green-600 hover:bg-green-700 mt-6"
+                      onClick={handleFormulate}
+                      disabled={isLoading || hasValidationErrors()}
+                      size="lg"
+                      className="bg-white text-blue-600 hover:bg-gray-100 font-bold"
                     >
-                      <Save className="w-4 h-4 mr-2" />
-                      Salvar
+                      <Calculator className="w-5 h-5 mr-2" />
+                      {isLoading ? 'Formulando...' : 'Formular Ração'}
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                {/* Salvar Formulação */}
+                {result && result.feasible && (
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <Label htmlFor="formulationName">Nome da Formulação</Label>
+                          <Input
+                            id="formulationName"
+                            value={formulationName}
+                            onChange={(e) => setFormulationName(e.target.value)}
+                            placeholder="Ex: Ração Postura Janeiro 2024"
+                          />
+                        </div>
+                        <Button 
+                          onClick={handleSaveFormulation}
+                          className="bg-green-600 hover:bg-green-700 mt-6"
+                        >
+                          <Save className="w-4 h-4 mr-2" />
+                          Salvar
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <ResultsDisplay result={result} isLoading={isLoading} />
+              </div>
             )}
           </div>
 
-          {/* Resultados */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-4 space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800">Resultados</h2>
-              <ResultsDisplay result={result} isLoading={isLoading} />
-              <FormulationHistory />
-              <FormulationComparison />
-              <NutritionalReport result={result} requirements={requirements} />
-              <PriceAlert ingredients={ingredients} />
-            </div>
+          {/* Painel Lateral */}
+          <div className="xl:col-span-1 space-y-4">
+            <h2 className="text-xl font-bold text-gray-800">Análises</h2>
+            
+            <NutritionalReport result={result} requirements={requirements} />
+            
+            <Separator />
+            
+            <FormulationHistory />
+            
+            <Separator />
+            
+            <FormulationComparison />
+            
+            <Separator />
+            
+            <PriceAlert ingredients={ingredients} />
           </div>
         </div>
 
-        {/* Informações Adicionais */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Informações do Sistema - Compacta */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="bg-gradient-to-br from-green-100 to-green-200 border-green-300">
-            <CardHeader>
-              <CardTitle className="text-green-700 flex items-center gap-2">
-                <Target className="w-5 h-5" />
-                Precisão Nutricional
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-green-600">
-                Atende rigorosamente às exigências nutricionais estabelecidas pelo NRC para poedeiras comerciais.
-              </p>
+            <CardContent className="p-4 text-center">
+              <Target className="w-8 h-8 mx-auto text-green-700 mb-2" />
+              <h3 className="font-semibold text-green-700 mb-1">Precisão Nutricional</h3>
+              <p className="text-sm text-green-600">Atende exigências NRC</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-orange-100 to-orange-200 border-orange-300">
-            <CardHeader>
-              <CardTitle className="text-orange-700 flex items-center gap-2">
-                <TrendingDown className="w-5 h-5" />
-                Otimização de Custos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-orange-600">
-                Algoritmo Simplex encontra a formulação de menor custo que atende todas as restrições.
-              </p>
+            <CardContent className="p-4 text-center">
+              <TrendingDown className="w-8 h-8 mx-auto text-orange-700 mb-2" />
+              <h3 className="font-semibold text-orange-700 mb-1">Otimização de Custos</h3>
+              <p className="text-sm text-orange-600">Algoritmo Simplex</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-blue-100 to-blue-200 border-blue-300">
-            <CardHeader>
-              <CardTitle className="text-blue-700 flex items-center gap-2">
-                <Calculator className="w-5 h-5" />
-                Método Científico
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-blue-600">
-                Baseado em programação linear, garantindo soluções matematicamente ótimas e confiáveis.
-              </p>
+            <CardContent className="p-4 text-center">
+              <Zap className="w-8 h-8 mx-auto text-blue-700 mb-2" />
+              <h3 className="font-semibold text-blue-700 mb-1">Resultados Rápidos</h3>
+              <p className="text-sm text-blue-600">Cálculos instantâneos</p>
             </CardContent>
           </Card>
         </div>
