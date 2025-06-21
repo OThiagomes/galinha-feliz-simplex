@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +18,6 @@ import NutritionalReport from '@/components/NutritionalReport';
 import PriceAlert from '@/components/PriceAlert';
 import ValidationAlert from '@/components/ValidationAlert';
 import { Ingredient, NutritionalRequirement, FormulationResult } from '@/types/nutrition';
-import { calculateCompatibilityScore } from '@/utils/ingredientConverter';
 import { ClientIngredient } from '@/types/client';
 import { SimplexSolver } from '@/utils/simplex';
 import { sampleIngredients } from '@/data/sampleIngredients';

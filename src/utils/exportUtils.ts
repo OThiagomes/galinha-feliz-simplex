@@ -10,20 +10,20 @@ export const exportToCSV = (result: FormulationResult): void => {
       item.ingredient.name,
       item.percentage.toFixed(2),
       item.cost.toFixed(4),
-      item.ingredient.protein.toString(),
-      item.ingredient.energy.toString(),
+      item.ingredient.crudeProtein.toString(),
+      item.ingredient.metabolizableEnergy.toString(),
       item.ingredient.calcium.toString(),
-      item.ingredient.phosphorus.toString()
+      item.ingredient.availablePhosphorus.toString()
     ]),
     [],
     ['PERFIL NUTRICIONAL DA RAÇÃO'],
-    ['Proteína Bruta (%)', result.nutritionalProfile.protein.toFixed(2)],
-    ['Energia Metabolizável (kcal/kg)', result.nutritionalProfile.energy.toFixed(0)],
+    ['Proteína Bruta (%)', result.nutritionalProfile.crudeProtein.toFixed(2)],
+    ['Energia Metabolizável (kcal/kg)', result.nutritionalProfile.metabolizableEnergy.toFixed(0)],
     ['Cálcio (%)', result.nutritionalProfile.calcium.toFixed(2)],
-    ['Fósforo (%)', result.nutritionalProfile.phosphorus.toFixed(2)],
+    ['Fósforo (%)', result.nutritionalProfile.availablePhosphorus.toFixed(2)],
     ['Lisina (%)', result.nutritionalProfile.lysine.toFixed(2)],
     ['Metionina (%)', result.nutritionalProfile.methionine.toFixed(2)],
-    ['Fibra Bruta (%)', result.nutritionalProfile.fiber.toFixed(2)],
+    ['Fibra Bruta (%)', result.nutritionalProfile.crudeFiber.toFixed(2)],
     [],
     ['CUSTO TOTAL', `R$ ${result.totalCost.toFixed(4)}/kg`]
   ];
@@ -89,10 +89,10 @@ export const exportToPDF = (result: FormulationResult): void => {
                 <td>${item.ingredient.name}</td>
                 <td>${item.percentage.toFixed(2)}</td>
                 <td>${item.cost.toFixed(4)}</td>
-                <td>${item.ingredient.protein}</td>
-                <td>${item.ingredient.energy}</td>
+                <td>${item.ingredient.crudeProtein}</td>
+                <td>${item.ingredient.metabolizableEnergy}</td>
                 <td>${item.ingredient.calcium}</td>
-                <td>${item.ingredient.phosphorus}</td>
+                <td>${item.ingredient.availablePhosphorus}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -100,13 +100,13 @@ export const exportToPDF = (result: FormulationResult): void => {
 
         <h2>Perfil Nutricional da Ração</h2>
         <table>
-          <tr><td><strong>Proteína Bruta (%)</strong></td><td>${result.nutritionalProfile.protein.toFixed(2)}</td></tr>
-          <tr><td><strong>Energia Metabolizável (kcal/kg)</strong></td><td>${result.nutritionalProfile.energy.toFixed(0)}</td></tr>
+          <tr><td><strong>Proteína Bruta (%)</strong></td><td>${result.nutritionalProfile.crudeProtein.toFixed(2)}</td></tr>
+          <tr><td><strong>Energia Metabolizável (kcal/kg)</strong></td><td>${result.nutritionalProfile.metabolizableEnergy.toFixed(0)}</td></tr>
           <tr><td><strong>Cálcio (%)</strong></td><td>${result.nutritionalProfile.calcium.toFixed(2)}</td></tr>
-          <tr><td><strong>Fósforo (%)</strong></td><td>${result.nutritionalProfile.phosphorus.toFixed(2)}</td></tr>
+          <tr><td><strong>Fósforo (%)</strong></td><td>${result.nutritionalProfile.availablePhosphorus.toFixed(2)}</td></tr>
           <tr><td><strong>Lisina (%)</strong></td><td>${result.nutritionalProfile.lysine.toFixed(2)}</td></tr>
           <tr><td><strong>Metionina (%)</strong></td><td>${result.nutritionalProfile.methionine.toFixed(2)}</td></tr>
-          <tr><td><strong>Fibra Bruta (%)</strong></td><td>${result.nutritionalProfile.fiber.toFixed(2)}</td></tr>
+          <tr><td><strong>Fibra Bruta (%)</strong></td><td>${result.nutritionalProfile.crudeFiber.toFixed(2)}</td></tr>
         </table>
       </body>
     </html>
