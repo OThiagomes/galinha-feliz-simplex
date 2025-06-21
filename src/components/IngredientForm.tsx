@@ -160,7 +160,92 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
         <CardTitle className="flex items-center justify-between">
           <span className="text-green-700">Ingredientes Disponíveis</span>
           <Button 
-            onClick={loadDefaultIngredients} 
+            onClick={() => {
+              const defaultIngredients: Ingredient[] = [
+                {
+                  id: '1',
+                  name: 'Milho',
+                  category: 'cereais',
+                  origin: 'nacional',
+                  metabolizableEnergy: 3300,
+                  crudeProtein: 8.5,
+                  lysine: 0.26,
+                  methionine: 0.18,
+                  calcium: 0.02,
+                  availablePhosphorus: 0.28,
+                  crudeFiber: 2.2,
+                  currentPrice: 0.65,
+                  minInclusion: 0,
+                  maxInclusion: 70,
+                },
+                {
+                  id: '2',
+                  name: 'Farelo de Soja',
+                  category: 'oleaginosas',
+                  origin: 'nacional',
+                  metabolizableEnergy: 2230,
+                  crudeProtein: 45.0,
+                  lysine: 2.85,
+                  methionine: 0.65,
+                  calcium: 0.25,
+                  availablePhosphorus: 0.65,
+                  crudeFiber: 7.0,
+                  currentPrice: 1.20,
+                  minInclusion: 15,
+                  maxInclusion: 35,
+                },
+                {
+                  id: '3',
+                  name: 'Calcário Calcítico',
+                  category: 'minerais',
+                  origin: 'nacional',
+                  metabolizableEnergy: 0,
+                  crudeProtein: 0,
+                  lysine: 0,
+                  methionine: 0,
+                  calcium: 38.0,
+                  availablePhosphorus: 0,
+                  crudeFiber: 0,
+                  currentPrice: 0.15,
+                  minInclusion: 0,
+                  maxInclusion: 12,
+                },
+                {
+                  id: '4',
+                  name: 'Fosfato Bicálcico',
+                  category: 'minerais',
+                  origin: 'nacional',
+                  metabolizableEnergy: 0,
+                  crudeProtein: 0,
+                  lysine: 0,
+                  methionine: 0,
+                  calcium: 23.0,
+                  availablePhosphorus: 18.0,
+                  crudeFiber: 0,
+                  currentPrice: 2.80,
+                  minInclusion: 0,
+                  maxInclusion: 3,
+                },
+                {
+                  id: '5',
+                  name: 'Farinha de Carne e Ossos',
+                  category: 'subprodutos',
+                  origin: 'nacional',
+                  metabolizableEnergy: 2000,
+                  crudeProtein: 40.0,
+                  lysine: 2.2,
+                  methionine: 0.7,
+                  calcium: 10.0,
+                  availablePhosphorus: 5.0,
+                  crudeFiber: 2.5,
+                  currentPrice: 1.80,
+                  minInclusion: 0,
+                  maxInclusion: 8,
+                },
+              ];
+              
+              onIngredientsChange(defaultIngredients);
+            }} 
             variant="outline" 
             size="sm"
             className="bg-green-50 hover:bg-green-100"
@@ -176,7 +261,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
             <Label htmlFor="name">Nome</Label>
             <Input
               id="name"
-              value={newIngredient.name}
+              value={newIngredient.name || ''}
               onChange={(e) => setNewIngredient({ ...newIngredient, name: e.target.value })}
               placeholder="Ex: Milho"
             />
@@ -187,7 +272,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="crudeProtein"
               type="number"
               step="0.1"
-              value={newIngredient.crudeProtein}
+              value={newIngredient.crudeProtein || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, crudeProtein: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -196,7 +281,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
             <Input
               id="metabolizableEnergy"
               type="number"
-              value={newIngredient.metabolizableEnergy}
+              value={newIngredient.metabolizableEnergy || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, metabolizableEnergy: parseInt(e.target.value) || 0 })}
             />
           </div>
@@ -206,7 +291,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="calcium"
               type="number"
               step="0.01"
-              value={newIngredient.calcium}
+              value={newIngredient.calcium || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, calcium: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -216,7 +301,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="availablePhosphorus"
               type="number"
               step="0.01"
-              value={newIngredient.availablePhosphorus}
+              value={newIngredient.availablePhosphorus || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, availablePhosphorus: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -226,7 +311,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="lysine"
               type="number"
               step="0.01"
-              value={newIngredient.lysine}
+              value={newIngredient.lysine || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, lysine: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -236,7 +321,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="methionine"
               type="number"
               step="0.01"
-              value={newIngredient.methionine}
+              value={newIngredient.methionine || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, methionine: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -246,7 +331,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="crudeFiber"
               type="number"
               step="0.1"
-              value={newIngredient.crudeFiber}
+              value={newIngredient.crudeFiber || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, crudeFiber: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -256,7 +341,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="currentPrice"
               type="number"
               step="0.01"
-              value={newIngredient.currentPrice}
+              value={newIngredient.currentPrice || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, currentPrice: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -266,7 +351,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="minInclusion"
               type="number"
               step="0.1"
-              value={newIngredient.minInclusion}
+              value={newIngredient.minInclusion || 0}
               onChange={(e) => setNewIngredient({ ...newIngredient, minInclusion: parseFloat(e.target.value) || 0 })}
             />
           </div>
@@ -276,7 +361,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
               id="maxInclusion"
               type="number"
               step="0.1"
-              value={newIngredient.maxInclusion}
+              value={newIngredient.maxInclusion || 100}
               onChange={(e) => setNewIngredient({ ...newIngredient, maxInclusion: parseFloat(e.target.value) || 100 })}
             />
           </div>
@@ -294,13 +379,13 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ ingredients, onIngredie
             <div key={ingredient.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <div className="grid grid-cols-4 md:grid-cols-8 gap-2 flex-1 text-sm">
                 <div className="font-medium text-green-700">{ingredient.name}</div>
-                <div>Prot: {ingredient.crudeProtein}%</div>
-                <div>Energia: {ingredient.metabolizableEnergy}</div>
-                <div>Ca: {ingredient.calcium}%</div>
-                <div>P: {ingredient.availablePhosphorus}%</div>
-                <div>Lys: {ingredient.lysine}%</div>
-                <div>Met: {ingredient.methionine}%</div>
-                <div>R$ {ingredient.currentPrice.toFixed(2)}</div>
+                <div>Prot: {(ingredient.crudeProtein || 0).toFixed(1)}%</div>
+                <div>Energia: {ingredient.metabolizableEnergy || 0}</div>
+                <div>Ca: {(ingredient.calcium || 0).toFixed(2)}%</div>
+                <div>P: {(ingredient.availablePhosphorus || 0).toFixed(2)}%</div>
+                <div>Lys: {(ingredient.lysine || 0).toFixed(2)}%</div>
+                <div>Met: {(ingredient.methionine || 0).toFixed(2)}%</div>
+                <div>R$ {(ingredient.currentPrice || 0).toFixed(2)}</div>
               </div>
               <Button
                 variant="outline"
