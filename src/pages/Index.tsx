@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +17,7 @@ import NutritionalReport from '@/components/NutritionalReport';
 import PriceAlert from '@/components/PriceAlert';
 import ValidationAlert from '@/components/ValidationAlert';
 import { Ingredient, NutritionalRequirement, FormulationResult } from '@/types/nutrition';
+import { calculateCompatibilityScore } from '@/utils/ingredientConverter';
 import { ClientIngredient } from '@/types/client';
 import { SimplexSolver } from '@/utils/simplex';
 import { sampleIngredients } from '@/data/sampleIngredients';
@@ -35,19 +35,21 @@ const Index = () => {
   } = useClients();
 
   const [requirements, setRequirements] = useState<NutritionalRequirement>({
-    minProtein: 16.0,
-    maxProtein: 18.0,
-    minEnergy: 2750,
-    maxEnergy: 2850,
+    profileName: 'Poedeiras Comerciais - Padrão',
+    phase: 'peak-lay',
+    minMetabolizableEnergy: 2750,
+    maxMetabolizableEnergy: 2850,
+    minCrudeProtein: 16.0,
+    maxCrudeProtein: 18.0,
     minCalcium: 3.8,
     maxCalcium: 4.2,
-    minPhosphorus: 0.35,
-    maxPhosphorus: 0.45,
+    minAvailablePhosphorus: 0.35,
+    maxAvailablePhosphorus: 0.45,
     minLysine: 0.75,
     maxLysine: 0.85,
     minMethionine: 0.38,
     maxMethionine: 0.45,
-    maxFiber: 6.0
+    maxCrudeFiber: 6.0
   });
   
   const [result, setResult] = useState<FormulationResult | null>(null);
@@ -62,16 +64,18 @@ const Index = () => {
       .map(ing => ({
         id: ing.id,
         name: ing.name,
-        protein: ing.protein,
-        energy: ing.energy,
-        calcium: ing.calcium,
-        phosphorus: ing.phosphorus,
+        category: ing.category,
+        origin: ing.origin,
+        metabolizableEnergy: ing.metabolizableEnergy,
+        crudeProtein: ing.crudeProtein,
         lysine: ing.lysine,
         methionine: ing.methionine,
-        fiber: ing.fiber,
-        price: ing.price,
-        minPercent: 0.0, // Default minimum percentage
-        maxPercent: 100.0 // Default maximum percentage
+        calcium: ing.calcium,
+        availablePhosphorus: ing.availablePhosphorus,
+        crudeFiber: ing.crudeFiber,
+        currentPrice: ing.currentPrice,
+        minInclusion: ing.minInclusion,
+        maxInclusion: ing.maxInclusion
       }));
   };
 
@@ -87,7 +91,19 @@ const Index = () => {
 
     const clientIngredients: ClientIngredient[] = sampleIngredients.map((ing, index) => ({
       id: (Date.now() + index).toString(),
-      ...ing,
+      name: ing.name,
+      category: ing.category,
+      origin: ing.origin,
+      metabolizableEnergy: ing.metabolizableEnergy,
+      crudeProtein: ing.crudeProtein,
+      lysine: ing.lysine,
+      methionine: ing.methionine,
+      calcium: ing.calcium,
+      availablePhosphorus: ing.availablePhosphorus,
+      crudeFiber: ing.crudeFiber,
+      currentPrice: ing.currentPrice,
+      minInclusion: ing.minInclusion,
+      maxInclusion: ing.maxInclusion,
       availability: true,
       notes: 'Ingrediente padrão'
     }));
@@ -172,9 +188,9 @@ const Index = () => {
   const hasValidationErrors = () => {
     return !selectedClient || 
            currentIngredients.length < 2 || 
-           currentIngredients.some(i => !i.name.trim() || i.price <= 0) ||
-           requirements.minProtein >= requirements.maxProtein ||
-           requirements.minEnergy >= requirements.maxEnergy;
+           currentIngredients.some(i => !i.name.trim() || i.currentPrice <= 0) ||
+           requirements.minCrudeProtein >= requirements.maxCrudeProtein ||
+           requirements.minMetabolizableEnergy >= requirements.maxMetabolizableEnergy;
   };
 
   return (
@@ -322,7 +338,19 @@ const Index = () => {
                   onIngredientsChange={(ingredients) => {
                     const clientIngredients: ClientIngredient[] = ingredients.map((ing, index) => ({
                       id: selectedClient.ingredients[index]?.id || (Date.now() + index).toString(),
-                      ...ing,
+                      name: ing.name,
+                      category: ing.category,
+                      origin: ing.origin,
+                      metabolizableEnergy: ing.metabolizableEnergy,
+                      crudeProtein: ing.crudeProtein,
+                      lysine: ing.lysine,
+                      methionine: ing.methionine,
+                      calcium: ing.calcium,
+                      availablePhosphorus: ing.availablePhosphorus,
+                      crudeFiber: ing.crudeFiber,
+                      currentPrice: ing.currentPrice,
+                      minInclusion: ing.minInclusion,
+                      maxInclusion: ing.maxInclusion,
                       availability: true,
                       notes: selectedClient.ingredients[index]?.notes || ''
                     }));
