@@ -10,6 +10,9 @@ import IngredientForm from '@/components/IngredientForm';
 import RequirementsForm from '@/components/RequirementsForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
 import FormulationHistory from '@/components/FormulationHistory';
+import FormulationComparison from '@/components/FormulationComparison';
+import NutritionalReport from '@/components/NutritionalReport';
+import PriceAlert from '@/components/PriceAlert';
 import ValidationAlert from '@/components/ValidationAlert';
 import { Ingredient, NutritionalRequirement, FormulationResult } from '@/types/nutrition';
 import { SimplexSolver } from '@/utils/simplex';
@@ -249,6 +252,9 @@ const Index = () => {
               <h2 className="text-2xl font-bold text-gray-800">Resultados</h2>
               <ResultsDisplay result={result} isLoading={isLoading} />
               <FormulationHistory />
+              <FormulationComparison />
+              <NutritionalReport result={result} requirements={requirements} />
+              <PriceAlert ingredients={ingredients} />
             </div>
           </div>
         </div>
