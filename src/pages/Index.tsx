@@ -60,6 +60,7 @@ const Index = () => {
     return clientIngredients
       .filter(ing => ing.availability)
       .map(ing => ({
+        id: ing.id,
         name: ing.name,
         protein: ing.protein,
         energy: ing.energy,
@@ -68,7 +69,9 @@ const Index = () => {
         lysine: ing.lysine,
         methionine: ing.methionine,
         fiber: ing.fiber,
-        price: ing.price
+        price: ing.price,
+        minPercent: 0.0, // Default minimum percentage
+        maxPercent: 100.0 // Default maximum percentage
       }));
   };
 
