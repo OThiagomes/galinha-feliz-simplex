@@ -419,7 +419,7 @@ const IngredientManagement: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
           
           {filteredIngredients.length === 0 && (
