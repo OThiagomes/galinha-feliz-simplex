@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calculator, Settings, Target, Users } from 'lucide-react';
+import { Calculator, Settings, Target, Users, Package } from 'lucide-react';
 import ClientSelector from '@/components/ClientSelector';
 import UniversalRequirementsManager from '@/components/UniversalRequirementsManager';
-import MinimalFormulation from '@/components/MinimalFormulation';
+import FormulationInterface from '@/components/FormulationInterface';
+import IngredientManagement from '@/components/IngredientManagement';
 import { useClients } from '@/hooks/useClients';
 
 const Index = () => {
@@ -39,7 +40,7 @@ const Index = () => {
 
         {/* Tabs Principais */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="formulation" className="flex items-center gap-2">
               <Calculator className="w-4 h-4" />
               Formulação
@@ -49,13 +50,17 @@ const Index = () => {
               Exigências
             </TabsTrigger>
             <TabsTrigger value="ingredients" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
+              <Package className="w-4 h-4" />
               Ingredientes
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Relatórios
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="formulation">
-            <MinimalFormulation />
+            <FormulationInterface />
           </TabsContent>
 
           <TabsContent value="requirements">
@@ -63,12 +68,19 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="ingredients">
+            <IngredientManagement />
+          </TabsContent>
+
+          <TabsContent value="reports">
             <Card>
               <CardContent className="flex items-center justify-center py-12">
                 <div className="text-center text-gray-500">
                   <Settings className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-xl font-semibold mb-2">Gestão de Ingredientes</h3>
-                  <p>Selecione um cliente para gerenciar seus ingredientes</p>
+                  <h3 className="text-xl font-semibold mb-2">Sistema de Relatórios</h3>
+                  <p>Funcionalidade em desenvolvimento</p>
+                  <p className="text-sm mt-2">
+                    Relatórios avançados, análises e exportações serão implementados em breve.
+                  </p>
                 </div>
               </CardContent>
             </Card>

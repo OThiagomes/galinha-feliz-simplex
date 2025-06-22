@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Client, ClientIngredient, ClientFormulation } from '@/types/client';
 import { FormulationResult } from '@/types/nutrition';
@@ -68,7 +67,15 @@ export const useClients = () => {
   };
 
   const updateClientIngredients = (clientId: string, ingredients: ClientIngredient[]) => {
-    updateClient(clientId, { ingredients });
+    setClients(prev => {
+      const updated = prev.map(client => 
+        client.id === clientId 
+          ? { ...client, ingredients }
+          : client
+      );
+      localStorage.setItem('clients', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const saveClientFormulation = (result: FormulationResult, name: string, ingredients: ClientIngredient[]) => {
