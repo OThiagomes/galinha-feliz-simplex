@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import {
+import { 
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -11,247 +11,331 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
+  SidebarTrigger
+} from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { 
   Calculator,
-  Target,
-  Package,
   BarChart3,
-  Users,
+  Brain,
   Settings,
-  Zap,
+  Users,
+  Package,
+  Target,
   TrendingUp,
-  FileText,
-  Database,
-  ChevronRight,
+  Zap,
   Sparkles,
   Activity,
-  PieChart,
-  BookOpen,
-  HelpCircle
+  FileText,
+  Bell,
+  HelpCircle,
+  ChevronRight
 } from 'lucide-react';
+import FormulationInterface from './FormulationInterface';
+import MinimalFormulation from './MinimalFormulation';
+import AdvancedDashboard from './AdvancedDashboard';
+import AIInsights from './AIInsights';
+import { useClients } from '@/hooks/useClients';
+import { useUniversalRequirements } from '@/hooks/useUniversalRequirements';
 
-interface MainLayoutProps {
-  children: React.ReactNode;
-  activeSection: string;
-  onSectionChange: (section: string) => void;
-}
+type ActiveView = 'dashboard' | 'formulation' | 'minimal' | 'ai-insights' | 'clients' | 'ingredients' | 'reports' | 'settings';
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children, activeSection, onSectionChange }) => {
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(['formulation', 'management']);
+const MainLayout: React.FC = () => {
+  const [activeView, setActiveView] = useState<ActiveView>('dashboard');
+  const { clients } = useClients();
+  const { requirements } = useUniversalRequirements();
 
-  const toggleGroup = (groupId: string) => {
-    setExpandedGroups(prev => 
-      prev.includes(groupId) 
-        ? prev.filter(id => id !== groupId)
-        : [...prev, groupId]
-    );
-  };
-
-  const menuSections = [
+  const navigationItems = [
     {
-      id: 'formulation',
-      label: 'Formulação',
+      title: "Dashboard",
+      icon: BarChart3,
+      id: 'dashboard' as ActiveView,
+      badge: "Pro",
+      color: "text-blue-600"
+    },
+    {
+      title: "Formulação Avançada",
       icon: Calculator,
-      color: 'bg-gradient-to-r from-blue-500 to-purple-600',
-      items: [
-        { id: 'formulation', label: 'Formulação Rápida', icon: Zap, badge: 'Popular' },
-        { id: 'advanced-formulation', label: 'Formulação Avançada', icon: Calculator },
-        { id: 'optimization', label: 'Otimização', icon: TrendingUp },
-        { id: 'comparison', label: 'Comparação', icon: BarChart3 }
-      ]
+      id: 'formulation' as ActiveView,
+      badge: "IA",
+      color: "text-purple-600"
     },
     {
-      id: 'management',
-      label: 'Gestão',
-      icon: Database,
-      color: 'bg-gradient-to-r from-green-500 to-teal-600',
-      items: [
-        { id: 'ingredients', label: 'Ingredientes', icon: Package },
-        { id: 'requirements', label: 'Exigências', icon: Target },
-        { id: 'clients', label: 'Clientes', icon: Users },
-        { id: 'presets', label: 'Presets', icon: Sparkles, badge: 'Novo' }
-      ]
+      title: "Formulação Simples",
+      icon: Zap,
+      id: 'minimal' as ActiveView,
+      badge: "Rápido",
+      color: "text-green-600"
     },
     {
-      id: 'reports',
-      label: 'Relatórios',
-      icon: FileText,
-      color: 'bg-gradient-to-r from-orange-500 to-red-600',
-      items: [
-        { id: 'nutritional-reports', label: 'Relatórios Nutricionais', icon: PieChart },
-        { id: 'cost-analysis', label: 'Análise de Custos', icon: TrendingUp },
-        { id: 'batch-reports', label: 'Relatórios de Lote', icon: FileText },
-        { id: 'export', label: 'Exportação', icon: Activity }
-      ]
-    },
-    {
-      id: 'tools',
-      label: 'Ferramentas',
-      icon: Settings,
-      color: 'bg-gradient-to-r from-purple-500 to-pink-600',
-      items: [
-        { id: 'calculator', label: 'Calculadora Nutricional', icon: Calculator },
-        { id: 'converter', label: 'Conversor de Unidades', icon: Activity },
-        { id: 'validator', label: 'Validador de Fórmulas', icon: Target },
-        { id: 'help', label: 'Ajuda e Tutoriais', icon: HelpCircle }
-      ]
+      title: "Insights de IA",
+      icon: Brain,
+      id: 'ai-insights' as ActiveView,
+      badge: "Novo",
+      color: "text-orange-600"
     }
   ];
 
-  const AppSidebar = () => (
-    <Sidebar>
-      <SidebarHeader className="border-b bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 p-4">
-        <div className="flex items-center gap-3 text-white">
-          <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-            <Sparkles className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="font-bold text-lg">Sistema de Formulação</h2>
-            <p className="text-xs text-blue-100">Otimização Nutricional Avançada</p>
-          </div>
-        </div>
-      </SidebarHeader>
+  const dataItems = [
+    {
+      title: "Clientes",
+      icon: Users,
+      id: 'clients' as ActiveView,
+      count: clients.length,
+      color: "text-indigo-600"
+    },
+    {
+      title: "Ingredientes",
+      icon: Package,
+      id: 'ingredients' as ActiveView,
+      count: 156,
+      color: "text-emerald-600"
+    },
+    {
+      title: "Exigências",
+      icon: Target,
+      id: 'requirements' as ActiveView,
+      count: requirements.length,
+      color: "text-rose-600"
+    }
+  ];
 
-      <SidebarContent className="bg-gradient-to-b from-gray-50 to-white">
-        {menuSections.map((section) => (
-          <SidebarGroup key={section.id} className="mb-2">
-            <SidebarGroupLabel 
-              className="cursor-pointer flex items-center justify-between hover:bg-gray-100 p-2 rounded-lg transition-colors"
-              onClick={() => toggleGroup(section.id)}
-            >
-              <div className="flex items-center gap-2">
-                <div className={`p-1.5 rounded-lg ${section.color} shadow-sm`}>
-                  <section.icon className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-semibold text-gray-700">{section.label}</span>
-              </div>
-              <ChevronRight 
-                className={`w-4 h-4 text-gray-400 transition-transform ${
-                  expandedGroups.includes(section.id) ? 'rotate-90' : ''
-                }`} 
-              />
-            </SidebarGroupLabel>
-            
-            {expandedGroups.includes(section.id) && (
-              <SidebarGroupContent>
-                <SidebarMenu className="ml-4 space-y-1">
-                  {section.items.map((item) => (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton
-                        isActive={activeSection === item.id}
-                        onClick={() => onSectionChange(item.id)}
-                        className={`flex items-center gap-3 p-2 rounded-lg transition-all hover:bg-gray-100 ${
-                          activeSection === item.id 
-                            ? 'bg-blue-50 border-l-4 border-blue-500 text-blue-700 font-medium' 
-                            : 'text-gray-600 hover:text-gray-800'
-                        }`}
-                      >
-                        <item.icon className={`w-4 h-4 ${
-                          activeSection === item.id ? 'text-blue-600' : 'text-gray-500'
-                        }`} />
-                        <span className="flex-1">{item.label}</span>
-                        {item.badge && (
-                          <Badge 
-                            variant="secondary" 
-                            className={`text-xs px-2 py-0 ${
-                              item.badge === 'Popular' ? 'bg-green-100 text-green-700' :
-                              item.badge === 'Novo' ? 'bg-blue-100 text-blue-700' :
-                              'bg-gray-100 text-gray-700'
-                            }`}
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            )}
-          </SidebarGroup>
-        ))}
-      </SidebarContent>
+  const systemItems = [
+    {
+      title: "Relatórios",
+      icon: FileText,
+      id: 'reports' as ActiveView,
+      color: "text-cyan-600"
+    },
+    {
+      title: "Configurações",
+      icon: Settings,
+      id: 'settings' as ActiveView,
+      color: "text-gray-600"
+    }
+  ];
 
-      <SidebarFooter className="border-t bg-gradient-to-r from-gray-100 to-blue-50 p-4">
-        <div className="space-y-3">
-          <div className="text-center text-xs text-gray-600">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Activity className="w-4 h-4 text-green-500" />
-              <span className="font-medium">Sistema Ativo</span>
-            </div>
-            <div className="bg-white bg-opacity-80 rounded-lg p-2">
-              <div className="text-sm font-semibold text-gray-800">v2.0.0</div>
-              <div className="text-xs text-gray-500">Formulação Avançada</div>
+  const renderContent = () => {
+    switch (activeView) {
+      case 'dashboard':
+        return <AdvancedDashboard />;
+      case 'formulation':
+        return <FormulationInterface />;
+      case 'minimal':
+        return <MinimalFormulation />;
+      case 'ai-insights':
+        return (
+          <AIInsights 
+            ingredients={[]} 
+            requirements={null} 
+            constraints={[]} 
+            currentResult={null}
+          />
+        );
+      default:
+        return (
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🚧</div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">Em Desenvolvimento</h3>
+              <p className="text-gray-600">Esta seção estará disponível em breve!</p>
             </div>
           </div>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="w-full text-gray-600 hover:bg-white hover:text-gray-800"
-            onClick={() => onSectionChange('help')}
-          >
-            <BookOpen className="w-4 h-4 mr-2" />
-            Documentação
-          </Button>
-        </div>
-      </SidebarFooter>
-    </Sidebar>
-  );
+        );
+    }
+  };
+
+  const getActiveItemTitle = () => {
+    const allItems = [...navigationItems, ...dataItems, ...systemItems];
+    const activeItem = allItems.find(item => item.id === activeView);
+    return activeItem?.title || 'Dashboard';
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
-      <SidebarProvider>
-        <div className="flex w-full min-h-screen">
-          <AppSidebar />
-          <main className="flex-1 flex flex-col">
-            <header className="bg-white border-b shadow-sm sticky top-0 z-10">
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-3">
-                  <SidebarTrigger className="lg:hidden" />
-                  <div className="hidden lg:block">
-                    <h1 className="text-xl font-bold text-gray-800">
-                      {menuSections
-                        .flatMap(s => s.items)
-                        .find(item => item.id === activeSection)?.label || 'Dashboard'}
-                    </h1>
-                    <p className="text-sm text-gray-600">
-                      Sistema integrado de formulação nutricional
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span>Online</span>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="text-gray-600 hover:bg-gray-100"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </header>
-            
-            <div className="flex-1 overflow-auto">
-              {children}
+    <>
+      {/* Sidebar */}
+      <Sidebar className="border-r-2 border-gray-200 bg-white">
+        <SidebarHeader className="border-b border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-br from-blue-600 to-purple-600 p-2 rounded-lg">
+              <Sparkles className="w-6 h-6 text-white" />
             </div>
-          </main>
+            <div>
+              <h2 className="font-bold text-lg text-gray-800">NutriFormula</h2>
+              <p className="text-xs text-gray-500">Sistema IA Avançado</p>
+            </div>
+          </div>
+        </SidebarHeader>
+
+        <SidebarContent className="px-3 py-4">
+          {/* Navegação Principal */}
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              🧮 Formulação
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navigationItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => setActiveView(item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all hover:bg-gray-100 ${
+                        activeView === item.id 
+                          ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-blue-500 shadow-sm' 
+                          : ''
+                      }`}
+                    >
+                      <item.icon className={`w-5 h-5 ${activeView === item.id ? 'text-blue-600' : item.color}`} />
+                      <span className={`font-medium ${activeView === item.id ? 'text-blue-800' : 'text-gray-700'}`}>
+                        {item.title}
+                      </span>
+                      <div className="flex items-center gap-2 ml-auto">
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs px-2 py-0.5 ${
+                            activeView === item.id ? 'bg-blue-100 text-blue-700 border-blue-300' : ''
+                          }`}
+                        >
+                          {item.badge}
+                        </Badge>
+                        {activeView === item.id && <ChevronRight className="w-4 h-4 text-blue-600" />}
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Dados */}
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              📊 Dados
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {dataItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => setActiveView(item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all hover:bg-gray-100 ${
+                        activeView === item.id 
+                          ? 'bg-gradient-to-r from-gray-50 to-blue-50 border-l-4 border-gray-500 shadow-sm' 
+                          : ''
+                      }`}
+                    >
+                      <item.icon className={`w-5 h-5 ${activeView === item.id ? 'text-gray-700' : item.color}`} />
+                      <span className={`font-medium ${activeView === item.id ? 'text-gray-800' : 'text-gray-700'}`}>
+                        {item.title}
+                      </span>
+                      <Badge 
+                        variant="secondary" 
+                        className={`ml-auto text-xs ${
+                          activeView === item.id ? 'bg-gray-200 text-gray-800' : 'bg-gray-100'
+                        }`}
+                      >
+                        {item.count}
+                      </Badge>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Sistema */}
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              ⚙️ Sistema
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {systemItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => setActiveView(item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all hover:bg-gray-100 ${
+                        activeView === item.id 
+                          ? 'bg-gray-100 border-l-4 border-gray-400' 
+                          : ''
+                      }`}
+                    >
+                      <item.icon className={`w-5 h-5 ${activeView === item.id ? 'text-gray-700' : item.color}`} />
+                      <span className={`font-medium ${activeView === item.id ? 'text-gray-800' : 'text-gray-700'}`}>
+                        {item.title}
+                      </span>
+                    </SidebarMenuButton>
+                  </Sidebar MenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter className="border-t border-gray-200 p-4">
+          <div className="space-y-3">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-semibold text-green-800">Sistema Online</span>
+              </div>
+              <div className="text-xs text-green-700">
+                IA ativa • Todos os serviços operando
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="flex-1">
+                <Bell className="w-4 h-4 mr-1" />
+                Alertas
+              </Button>
+              <Button variant="outline" size="sm" className="flex-1">
+                <HelpCircle className="w-4 h-4 mr-1" />
+                Ajuda
+              </Button>
+            </div>
+          </div>
+        </SidebarFooter>
+      </Sidebar>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger className="md:hidden" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">{getActiveItemTitle()}</h1>
+                <p className="text-sm text-gray-600">
+                  {activeView === 'dashboard' && 'Visão geral e métricas do sistema'}
+                  {activeView === 'formulation' && 'Formulação com algoritmo Simplex avançado'}
+                  {activeView === 'minimal' && 'Interface simplificada para formulação rápida'}
+                  {activeView === 'ai-insights' && 'Análises inteligentes com TensorFlow'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1">
+                <Brain className="w-4 h-4 mr-1" />
+                IA Ativa
+              </Badge>
+              <Badge variant="outline" className="text-green-600 border-green-300">
+                <TrendingUp className="w-4 h-4 mr-1" />
+                Online
+              </Badge>
+            </div>
+          </div>
+        </header>
+
+        {/* Content */}
+        <div className="flex-1 p-6 overflow-auto">
+          {renderContent()}
         </div>
-      </SidebarProvider>
-    </div>
+      </main>
+    </>
   );
 };
 
