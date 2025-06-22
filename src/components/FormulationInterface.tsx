@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,7 @@ import {
   Target
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PieChart as RechartsPieChart, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { Client, ClientIngredient } from '@/types/client';
 import { UniversalNutritionalRequirement, IngredientConstraint, PHASE_NAMES } from '@/types/phases';
 import { useClients } from '@/hooks/useClients';
@@ -392,7 +391,7 @@ const FormulationInterface: React.FC = () => {
                     >
                       <ResponsiveContainer width="100%" height="100%">
                         <RechartsPieChart>
-                          <RechartsPieChart.Pie
+                          <Pie
                             data={chartData}
                             cx="50%"
                             cy="50%"
@@ -404,7 +403,7 @@ const FormulationInterface: React.FC = () => {
                             {chartData.map((entry, index) => (
                               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
-                          </RechartsPieChart.Pie>
+                          </Pie>
                           <ChartTooltip content={<ChartTooltipContent />} />
                         </RechartsPieChart>
                       </ResponsiveContainer>
