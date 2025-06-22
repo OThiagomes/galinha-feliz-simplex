@@ -253,9 +253,7 @@ const FormulationInterface: React.FC = () => {
             {selectedRequirement && (
               <div className="mt-4 p-3 bg-green-50 rounded-lg">
                 <div className="text-sm text-green-800 space-y-1">
-                  <div><strong>⚡ Energia:</strong> {selecte
-
-dRequirement.minMetabolizableEnergy}-{selectedRequirement.maxMetabolizableEnergy} kcal/kg</div>
+                  <div><strong>⚡ Energia:</strong> {selectedRequirement.minMetabolizableEnergy}-{selectedRequirement.maxMetabolizableEnergy} kcal/kg</div>
                   <div><strong>🥩 Proteína:</strong> {selectedRequirement.minCrudeProtein}-{selectedRequirement.maxCrudeProtein}%</div>
                 </div>
               </div>
