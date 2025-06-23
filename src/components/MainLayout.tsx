@@ -266,7 +266,7 @@ const MainLayout: React.FC = () => {
                         {item.title}
                       </span>
                     </SidebarMenuButton>
-                  </Sidebar MenuItem>
+                  </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
