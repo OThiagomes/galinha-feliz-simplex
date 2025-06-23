@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Sidebar,
@@ -36,6 +35,10 @@ import FormulationInterface from './FormulationInterface';
 import MinimalFormulation from './MinimalFormulation';
 import AdvancedDashboard from './AdvancedDashboard';
 import AIInsights from './AIInsights';
+import ClientsManagement from './ClientsManagement';
+import IngredientsManagement from './IngredientsManagement';
+import ReportsManagement from './ReportsManagement';
+import SettingsManagement from './SettingsManagement';
 import { useClients } from '@/hooks/useClients';
 import { useUniversalRequirements } from '@/hooks/useUniversalRequirements';
 
@@ -133,6 +136,14 @@ const MainLayout: React.FC = () => {
             currentResult={null}
           />
         );
+      case 'clients':
+        return <ClientsManagement />;
+      case 'ingredients':
+        return <IngredientsManagement />;
+      case 'reports':
+        return <ReportsManagement />;
+      case 'settings':
+        return <SettingsManagement />;
       default:
         return (
           <div className="flex items-center justify-center h-96">
@@ -150,6 +161,29 @@ const MainLayout: React.FC = () => {
     const allItems = [...navigationItems, ...dataItems, ...systemItems];
     const activeItem = allItems.find(item => item.id === activeView);
     return activeItem?.title || 'Dashboard';
+  };
+
+  const getActiveItemDescription = () => {
+    switch (activeView) {
+      case 'dashboard':
+        return 'Visão geral e métricas do sistema';
+      case 'formulation':
+        return 'Formulação com algoritmo Simplex avançado';
+      case 'minimal':
+        return 'Interface simplificada para formulação rápida';
+      case 'ai-insights':
+        return 'Análises inteligentes com TensorFlow';
+      case 'clients':
+        return 'Gestão completa da base de clientes';
+      case 'ingredients':
+        return 'Controle de estoque e preços de ingredientes';
+      case 'reports':
+        return 'Relatórios detalhados e análises';
+      case 'settings':
+        return 'Configurações e personalização do sistema';
+      default:
+        return 'Área em desenvolvimento';
+    }
   };
 
   return (
@@ -309,7 +343,7 @@ const MainLayout: React.FC = () => {
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">{getActiveItemTitle()}</h1>
                 <p className="text-sm text-gray-600">
-                  {activeView === 'dashboard' && 'Visão geral e métricas do sistema'}
+                  {activeView === 'dashboard' && getActiveItemDescription()}
                   {activeView === 'formulation' && 'Formulação com algoritmo Simplex avançado'}
                   {activeView === 'minimal' && 'Interface simplificada para formulação rápida'}
                   {activeView === 'ai-insights' && 'Análises inteligentes com TensorFlow'}
