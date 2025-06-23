@@ -1,16 +1,19 @@
+
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Drawer } from 'antd';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  DashboardOutlined,
-  TeamOutlined,
-  ShoppingCartOutlined,
-  CalculatorOutlined,
-  BarChartOutlined,
-  SettingOutlined,
-  BulbOutlined,
-} from '@ant-design/icons';
+  DashboardIcon,
+  PersonIcon,
+  MixIcon,
+  CalculatorIcon,
+  BarChartIcon,
+  GearIcon,
+  LightbulbIcon,
+  HamburgerMenuIcon,
+} from '@radix-ui/react-icons';
 import AdvancedDashboard from './AdvancedDashboard';
 import ClientsManagement from './ClientsManagement';
 import IngredientsManagement from './IngredientsManagement';
@@ -20,8 +23,6 @@ import SettingsManagement from './SettingsManagement';
 import MinimalFormulation from './MinimalFormulation';
 import RequirementsManager from './RequirementsManager';
 
-const { Header, Sider, Content } = Layout;
-
 interface MenuItem {
   key: string;
   icon: React.ReactNode;
@@ -29,32 +30,19 @@ interface MenuItem {
 }
 
 const MainLayout = () => {
-  const [collapsed, setCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
-  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const menuItems: MenuItem[] = [
-    { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: 'clients', icon: <TeamOutlined />, label: 'Clientes' },
-    { key: 'ingredients', icon: <ShoppingCartOutlined />, label: 'Ingredientes' },
-    { key: 'formulation', icon: <CalculatorOutlined />, label: 'Formulação Avançada' },
-    { key: 'minimal', icon: <BulbOutlined />, label: 'Formulação Simplificada' },
-    { key: 'requirements', icon: <SettingOutlined />, label: 'Exigências Nutricionais' },
-    { key: 'reports', icon: <BarChartOutlined />, label: 'Relatórios' },
-    { key: 'settings', icon: <SettingOutlined />, label: 'Configurações' },
+    { key: 'dashboard', icon: <DashboardIcon className="w-5 h-5" />, label: 'Dashboard' },
+    { key: 'clients', icon: <PersonIcon className="w-5 h-5" />, label: 'Clientes' },
+    { key: 'ingredients', icon: <MixIcon className="w-5 h-5" />, label: 'Ingredientes' },
+    { key: 'formulation', icon: <CalculatorIcon className="w-5 h-5" />, label: 'Formulação Avançada' },
+    { key: 'minimal', icon: <LightbulbIcon className="w-5 h-5" />, label: 'Formulação Simplificada' },
+    { key: 'requirements', icon: <GearIcon className="w-5 h-5" />, label: 'Exigências Nutricionais' },
+    { key: 'reports', icon: <BarChartIcon className="w-5 h-5" />, label: 'Relatórios' },
+    { key: 'settings', icon: <GearIcon className="w-5 h-5" />, label: 'Configurações' },
   ];
-
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
-
-  const showDrawer = () => {
-    setDrawerVisible(true);
-  };
-
-  const closeDrawer = () => {
-    setDrawerVisible(false);
-  };
 
   const renderContent = () => {
     switch (activeSection) {
@@ -80,60 +68,64 @@ const MainLayout = () => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}
-        breakpoint="lg"
-        onBreakpoint={broken => {
-          setCollapsed(broken);
-        }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}
-      >
-        <div className="demo-logo-vertical" style={{ height: '64px', margin: '16px', color: 'white', textAlign: 'center' }}>
-          {collapsed ? 'Form' : 'Formulador Pro'}
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <div className={`bg-white shadow-lg transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between">
+            {!sidebarCollapsed && (
+              <h1 className="text-xl font-bold text-orange-600">Formulador Pro</h1>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            >
+              <HamburgerMenuIcon className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} items={menuItems.map(item => ({
-          key: item.key,
-          icon: item.icon,
-          label: item.label,
-          onClick: () => {
-            setActiveSection(item.key);
-          }
-        }))} />
-      </Sider>
-      <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0, background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-            className: 'trigger',
-            onClick: toggleCollapsed,
-            style: { padding: '0 24px', fontSize: '20px' }
-          })}
-          <Button type="primary" onClick={showDrawer} style={{ marginRight: '20px' }}>
-            Open Drawer
-          </Button>
-        </Header>
-        <Content
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-            minHeight: 280,
-            background: '#fff',
-          }}
-        >
+        
+        <nav className="p-2">
+          {menuItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveSection(item.key)}
+              className={`w-full flex items-center gap-3 p-3 rounded-lg mb-1 transition-colors ${
+                activeSection === item.key
+                  ? 'bg-orange-100 text-orange-700 font-medium'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {item.icon}
+              {!sidebarCollapsed && <span>{item.label}</span>}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              {menuItems.find(item => item.key === activeSection)?.label}
+            </h2>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-green-100 text-green-700">
+                Sistema Ativo
+              </Badge>
+            </div>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 p-6 overflow-auto">
           {renderContent()}
-        </Content>
-      </Layout>
-      <Drawer
-        title="Configurações Rápidas"
-        placement="right"
-        onClose={closeDrawer}
-        visible={drawerVisible}
-        width={300}
-      >
-        <p>Some settings content here.</p>
-      </Drawer>
-    </Layout>
+        </main>
+      </div>
+    </div>
   );
 };
 
