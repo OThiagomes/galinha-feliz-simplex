@@ -1,297 +1,365 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Settings, 
-  User, 
+  Database, 
   Bell, 
   Shield, 
-  Database,
-  Palette,
-  Globe,
-  Zap,
-  Brain,
+  Palette, 
+  Globe, 
+  Download, 
+  Upload,
   Save,
   RefreshCw,
-  Download,
-  Upload
+  CheckCircle
 } from 'lucide-react';
 
+interface SettingsConfig {
+  [key: string]: any;
+}
+
 const SettingsManagement = () => {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<SettingsConfig>({
     // Configurações Gerais
-    companyName: 'NutriFormula Pro',
-    userEmail: 'admin@exemplo.com',
+    companyName: 'Formulador Pro',
+    defaultCurrency: 'BRL',
     language: 'pt-BR',
     timezone: 'America/Sao_Paulo',
     
-    // Notificações
-    emailNotifications: true,
-    stockAlerts: true,
-    priceAlerts: true,
-    systemUpdates: false,
+    // Configurações de Formulação
+    defaultOptimization: 'min-cost',
+    enableAI: true,
+    maxIterations: 1000,
+    convergenceTolerance: 0.001,
     
-    // IA e Otimização
-    aiEnabled: true,
-    autoOptimization: true,
-    tensorFlowModel: 'advanced',
-    predictionAccuracy: 'high',
-    
-    // Interface
+    // Configurações de Interface
     theme: 'light',
+    showAnimations: true,
     compactMode: false,
-    showAdvancedFeatures: true,
+    autoSave: true,
     
-    // Segurança
-    twoFactorAuth: false,
-    sessionTimeout: 30,
-    autoLogout: true
+    // Configurações de Relatórios
+    reportFormat: 'pdf',
+    includeCharts: true,
+    includeCosts: true,
+    includeNutrition: true,
+    
+    // Configurações de Notificações
+    priceAlerts: true,
+    formulationAlerts: true,
+    systemNotifications: true,
+    emailNotifications: false
   });
 
-  const handleSettingChange = (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = () => {
+    const savedSettings = localStorage.getItem('formulator-settings');
+    if (savedSettings) {
+      setSettings({ ...settings, ...JSON.parse(savedSettings) });
+    }
   };
 
-  const settingSections = [
+  const saveSettings = async () => {
+    setLoading(true);
+    try {
+      localStorage.setItem('formulator-settings', JSON.stringify(settings));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error('Erro ao salvar configurações:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetSettings = () => {
+    localStorage.removeItem('formulator-settings');
+    window.location.reload();
+  };
+
+  const updateSetting = (key: string, value: any) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const exportSettings = () => {
+    const dataStr = JSON.stringify(settings, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefault = 'formulator-settings.json';
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefault);
+    linkElement.click();
+  };
+
+  const importSettings = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importedSettings = JSON.parse(e.target?.result as string);
+          setSettings({ ...settings, ...importedSettings });
+        } catch (error) {
+          console.error('Erro ao importar configurações:', error);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const settingsCategories = [
     {
-      title: 'Configurações Gerais',
+      id: 'general',
+      title: 'Geral',
       icon: Settings,
-      color: 'bg-blue-100 text-blue-600',
       settings: [
         { key: 'companyName', label: 'Nome da Empresa', type: 'text' },
-        { key: 'userEmail', label: 'Email Principal', type: 'email' },
+        { key: 'defaultCurrency', label: 'Moeda Padrão', type: 'select', options: [
+          { value: 'BRL', label: 'Real (R$)' },
+          { value: 'USD', label: 'Dólar ($)' },
+          { value: 'EUR', label: 'Euro (€)' }
+        ]},
         { key: 'language', label: 'Idioma', type: 'select', options: [
           { value: 'pt-BR', label: 'Português (Brasil)' },
           { value: 'en-US', label: 'English (US)' },
           { value: 'es-ES', label: 'Español' }
         ]},
-        { key: 'timezone', label: 'Fuso Horário', type: 'text' }
-      ]
-    },
-    {
-      title: 'Notificações',
-      icon: Bell,
-      color: 'bg-yellow-100 text-yellow-600',
-      settings: [
-        { key: 'emailNotifications', label: 'Notificações por Email', type: 'switch' },
-        { key: 'stockAlerts', label: 'Alertas de Estoque', type: 'switch' },
-        { key: 'priceAlerts', label: 'Alertas de Preço', type: 'switch' },
-        { key: 'systemUpdates', label: 'Atualizações do Sistema', type: 'switch' }
-      ]
-    },
-    {
-      title: 'Inteligência Artificial',
-      icon: Brain,
-      color: 'bg-purple-100 text-purple-600',
-      settings: [
-        { key: 'aiEnabled', label: 'IA Habilitada', type: 'switch' },
-        { key: 'autoOptimization', label: 'Otimização Automática',  type: 'switch' },
-        { key: 'tensorFlowModel', label: 'Modelo TensorFlow', type: 'select', options: [
-          { value: 'basic', label: 'Básico' },
-          { value: 'advanced', label: 'Avançado' },
-          { value: 'expert', label: 'Expert' }
-        ]},
-        { key: 'predictionAccuracy', label: 'Precisão das Predições', type: 'select', options: [
-          { value: 'standard', label: 'Padrão' },
-          { value: 'high', label: 'Alta' },
-          { value: 'maximum', label: 'Máxima' }
+        { key: 'timezone', label: 'Fuso Horário', type: 'select', options: [
+          { value: 'America/Sao_Paulo', label: 'Brasília (GMT-3)' },
+          { value: 'America/New_York', label: 'Nova York (GMT-5)' },
+          { value: 'Europe/London', label: 'Londres (GMT+0)' }
         ]}
       ]
     },
     {
+      id: 'formulation',
+      title: 'Formulação',
+      icon: Database,
+      settings: [
+        { key: 'defaultOptimization', label: 'Otimização Padrão', type: 'select', options: [
+          { value: 'min-cost', label: 'Menor Custo' },
+          { value: 'max-margin', label: 'Maior Margem' },
+          { value: 'best-conversion', label: 'Melhor Conversão' }
+        ]},
+        { key: 'enableAI', label: 'Habilitar IA', type: 'boolean' },
+        { key: 'maxIterations', label: 'Max. Iterações', type: 'number' },
+        { key: 'convergenceTolerance', label: 'Tolerância de Convergência', type: 'number' }
+      ]
+    },
+    {
+      id: 'interface',
       title: 'Interface',
       icon: Palette,
-      color: 'bg-green-100 text-green-600',
       settings: [
         { key: 'theme', label: 'Tema', type: 'select', options: [
           { value: 'light', label: 'Claro' },
           { value: 'dark', label: 'Escuro' },
           { value: 'auto', label: 'Automático' }
         ]},
-        { key: 'compactMode', label: 'Modo Compacto', type: 'switch' },
-        { key: 'showAdvancedFeatures', label: 'Recursos Avançados', type: 'switch' }
+        { key: 'showAnimations', label: 'Mostrar Animações', type: 'boolean' },
+        { key: 'compactMode', label: 'Modo Compacto', type: 'boolean' },
+        { key: 'autoSave', label: 'Salvamento Automático', type: 'boolean' }
       ]
     },
     {
-      title: 'Segurança',
-      icon: Shield,
-      color: 'bg-red-100 text-red-600',
+      id: 'reports',
+      title: 'Relatórios',
+      icon: Download,
       settings: [
-        { key: 'twoFactorAuth', label: 'Autenticação 2FA', type: 'switch' },
-        { key: 'sessionTimeout', label: 'Timeout da Sessão (min)', type: 'number' },
-        { key: 'autoLogout', label: 'Logout Automático', type: 'switch' }
+        { key: 'reportFormat', label: 'Formato Padrão', type: 'select', options: [
+          { value: 'pdf', label: 'PDF' },
+          { value: 'excel', label: 'Excel' },
+          { value: 'csv', label: 'CSV' }
+        ]},
+        { key: 'includeCharts', label: 'Incluir Gráficos', type: 'boolean' },
+        { key: 'includeCosts', label: 'Incluir Custos', type: 'boolean' },
+        { key: 'includeNutrition', label: 'Incluir Nutrição', type: 'boolean' }
+      ]
+    },
+    {
+      id: 'notifications',
+      title: 'Notificações',
+      icon: Bell,
+      settings: [
+        { key: 'priceAlerts', label: 'Alertas de Preço', type: 'boolean' },
+        { key: 'formulationAlerts', label: 'Alertas de Formulação', type: 'boolean' },
+        { key: 'systemNotifications', label: 'Notificações do Sistema', type: 'boolean' },
+        { key: 'emailNotifications', label: 'Notificações por Email', type: 'boolean' }
       ]
     }
   ];
 
-  const renderSettingInput = (setting) => {
+  const renderSettingInput = (setting: any) => {
+    const value = settings[setting.key];
+
     switch (setting.type) {
-      case 'switch':
-        return (
-          <Switch
-            checked={settings[setting.key]}
-            onCheckedChange={(value) => handleSettingChange(setting.key, value)}
-          />
-        );
-      case 'select':
-        return (
-          <select
-            value={settings[setting.key]}
-            onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-            className="px-3 py-2 border rounded-md w-full max-w-xs"
-          >
-            {setting.options.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        );
+      case 'text':
       case 'number':
         return (
           <Input
-            type="number"
-            value={settings[setting.key]}
-            onChange={(e) => handleSettingChange(setting.key, parseInt(e.target.value))}
-            className="w-full max-w-xs"
-          />
-        );
-      default:
-        return (
-          <Input
             type={setting.type}
-            value={settings[setting.key]}
-            onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-            className="w-full max-w-xs"
+            value={value || ''}
+            onChange={(e) => updateSetting(setting.key, 
+              setting.type === 'number' ? parseFloat(e.target.value) : e.target.value
+            )}
+            className="w-full"
           />
         );
+      
+      case 'select':
+        return (
+          <Select value={value || ''} onValueChange={(val) => updateSetting(setting.key, val)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {setting.options.map((option: any) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      
+      case 'boolean':
+        return (
+          <Switch
+            checked={value || false}
+            onCheckedChange={(checked) => updateSetting(setting.key, checked)}
+          />
+        );
+      
+      default:
+        return null;
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800">Configurações do Sistema</h2>
-          <p className="text-gray-600">Personalize e configure o NutriFormula</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Restaurar Padrões
-          </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Save className="w-4 h-4 mr-2" />
-            Salvar Alterações
-          </Button>
-        </div>
-      </div>
-
-      {/* System Status */}
-      <Card className="border-2 border-green-200 bg-green-50">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-green-100 p-2 rounded-lg">
-                <Zap className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-green-800">Sistema Operacional</h3>
-                <p className="text-green-700">Todos os serviços funcionando normalmente</p>
-              </div>
+      <div className="bg-gradient-to-r from-gray-600 via-blue-600 to-purple-600 p-6 rounded-xl text-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white bg-opacity-20 p-3 rounded-lg">
+              <Settings className="w-8 h-8" />
             </div>
-            <Badge className="bg-green-600">
-              Versão 2.1.0
-            </Badge>
+            <div>
+              <h2 className="text-2xl font-bold">Configurações do Sistema</h2>
+              <p className="text-blue-100">Personalize sua experiência de formulação</p>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Settings Sections */}
-      <div className="space-y-6">
-        {settingSections.map((section) => (
-          <Card key={section.title}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${section.color}`}>
-                  <section.icon className="w-5 h-5" />
-                </div>
-                {section.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {section.settings.map((setting) => (
-                <div key={setting.key} className="flex items-center justify-between py-2">
-                  <div>
-                    <label className="font-medium text-gray-700">
-                      {setting.label}
-                    </label>
-                    {setting.description && (
-                      <p className="text-sm text-gray-500">{setting.description}</p>
-                    )}
-                  </div>
-                  {renderSettingInput(setting)}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Data Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <div className="bg-gray-100 p-2 rounded-lg">
-              <Database className="w-5 h-5 text-gray-600" />
-            </div>
-            Gerenciamento de Dados
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="justify-start">
+          <div className="flex gap-3">
+            <Button
+              onClick={exportSettings}
+              variant="ghost"
+              className="text-white hover:bg-white hover:bg-opacity-20"
+            >
               <Download className="w-4 h-4 mr-2" />
-              Exportar Dados
+              Exportar
             </Button>
-            <Button variant="outline" className="justify-start">
-              <Upload className="w-4 h-4 mr-2" />
-              Importar Dados
-            </Button>
-            <Button variant="outline" className="justify-start text-red-600 hover:text-red-700">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Reset Sistema
-            </Button>
-          </div>
-          
-          <div className="border-t pt-4">
-            <h4 className="font-medium mb-2">Estatísticas de Uso</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div>
-                <p className="text-gray-600">Formulações Criadas</p>
-                <p className="font-semibold">1,247</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Espaço Utilizado</p>
-                <p className="font-semibold">2.3 GB</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Usuários Ativos</p>
-                <p className="font-semibold">12</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Último Backup</p>
-                <p className="font-semibold">Hoje, 03:00</p>
-              </div>
+            <div className="relative">
+              <input
+                type="file"
+                accept=".json"
+                onChange={importSettings}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white hover:bg-opacity-20"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Importar
+              </Button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Status de Salvamento */}
+      {saved && (
+        <Alert className="border-green-300 bg-green-50">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">
+            Configurações salvas com sucesso!
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Configurações */}
+      <Card>
+        <CardContent className="p-6">
+          <Tabs defaultValue="general" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              {settingsCategories.map((category) => (
+                <TabsTrigger key={category.id} value={category.id} className="flex items-center gap-2">
+                  <category.icon className="w-4 h-4" />
+                  {category.title}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {settingsCategories.map((category) => (
+              <TabsContent key={category.id} value={category.id} className="space-y-6 mt-6">
+                <div className="grid gap-6">
+                  {category.settings.map((setting) => (
+                    <div key={setting.key} className="space-y-2">
+                      <Label htmlFor={setting.key} className="text-sm font-medium">
+                        {setting.label}
+                      </Label>
+                      {renderSettingInput(setting)}
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </CardContent>
       </Card>
+
+      {/* Ações */}
+      <div className="flex justify-between">
+        <Button
+          onClick={resetSettings}
+          variant="outline"
+          className="text-red-600 border-red-300 hover:bg-red-50"
+        >
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Restaurar Padrões
+        </Button>
+        
+        <Button
+          onClick={saveSettings}
+          disabled={loading}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          {loading ? (
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4 mr-2" />
+          )}
+          Salvar Configurações
+        </Button>
+      </div>
     </div>
   );
 };

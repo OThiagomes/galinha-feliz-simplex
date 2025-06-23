@@ -12,7 +12,7 @@ import {
   Trash2, 
   Phone, 
   Mail, 
-  MapPin,
+  Calendar,
   Building2
 } from 'lucide-react';
 import { useClients } from '@/hooks/useClients';
@@ -25,21 +25,17 @@ const ClientsManagement = () => {
   const [newClient, setNewClient] = useState({
     name: '',
     email: '',
-    phone: '',
-    company: '',
-    address: '',
-    status: 'active'
+    phone: ''
   });
 
   const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.company.toLowerCase().includes(searchTerm.toLowerCase())
+    client.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddClient = () => {
     if (newClient.name && newClient.email) {
       addClient(newClient);
-      setNewClient({ name: '', email: '', phone: '', company: '', address: '', status: 'active' });
+      setNewClient({ name: '', email: '', phone: '' });
       setShowAddForm(false);
     }
   };
@@ -50,7 +46,7 @@ const ClientsManagement = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">Gestão de Clientes</h2>
-          <p className="text-gray-600">Gerencie sua base de clientes</p>
+          <p className="text-gray-600">Gerencie sua base de clientes para formulação</p>
         </div>
         <Button 
           onClick={() => setShowAddForm(true)}
@@ -91,21 +87,11 @@ const ClientsManagement = () => {
                 value={newClient.email}
                 onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
               />
-              <Input
-                placeholder="Telefone"
-                value={newClient.phone}
-                onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
-              />
-              <Input
-                placeholder="Empresa"
-                value={newClient.company}
-                onChange={(e) => setNewClient({ ...newClient, company: e.target.value })}
-              />
             </div>
             <Input
-              placeholder="Endereço"
-              value={newClient.address}
-              onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+              placeholder="Telefone"
+              value={newClient.phone}
+              onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
             />
             <div className="flex gap-2">
               <Button onClick={handleAddClient}>Salvar Cliente</Button>
@@ -129,11 +115,11 @@ const ClientsManagement = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg">{client.name}</h3>
-                    <p className="text-gray-600 text-sm">{client.company}</p>
+                    <p className="text-gray-600 text-sm">Cliente desde {new Date(client.createdAt).toLocaleDateString('pt-BR')}</p>
                   </div>
                 </div>
-                <Badge variant={client.status === 'active' ? 'default' : 'secondary'}>
-                  {client.status === 'active' ? 'Ativo' : 'Inativo'}
+                <Badge variant="default">
+                  Ativo
                 </Badge>
               </div>
               
@@ -148,12 +134,10 @@ const ClientsManagement = () => {
                     {client.phone}
                   </div>
                 )}
-                {client.address && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <MapPin className="w-4 h-4" />
-                    {client.address}
-                  </div>
-                )}
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Building2 className="w-4 h-4" />
+                  {client.ingredients.length} ingredientes cadastrados
+                </div>
               </div>
 
               <div className="flex gap-2">
@@ -174,7 +158,7 @@ const ClientsManagement = () => {
         <div className="text-center py-12">
           <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-600 mb-2">Nenhum cliente encontrado</h3>
-          <p className="text-gray-500">Adicione novos clientes para começar</p>
+          <p className="text-gray-500">Adicione novos clientes para começar a formular</p>
         </div>
       )}
     </div>
