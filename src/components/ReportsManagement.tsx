@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,12 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  BarChartIcon, 
-  DownloadIcon, 
-  CalendarIcon,
-  PersonIcon,
-  MixIcon
-} from '@radix-ui/react-icons';
+  BarChart3, 
+  Download, 
+  Calendar,
+  Users,
+  Beaker
+} from 'lucide-react';
 
 const ReportsManagement = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
@@ -22,28 +21,28 @@ const ReportsManagement = () => {
       id: 'formulations',
       title: 'Relatório de Formulações',
       description: 'Análise detalhada das formulações realizadas',
-      icon: <MixIcon className="w-6 h-6" />,
+      icon: <Beaker className="w-6 h-6" />,
       color: 'bg-blue-500',
     },
     {
       id: 'costs',
       title: 'Relatório de Custos',
       description: 'Análise de custos por formulação e período',
-      icon: <BarChartIcon className="w-6 h-6" />,
+      icon: <BarChart3 className="w-6 h-6" />,
       color: 'bg-green-500',
     },
     {
       id: 'clients',
       title: 'Relatório de Clientes',
       description: 'Atividade e histórico por cliente',
-      icon: <PersonIcon className="w-6 h-6" />,
+      icon: <Users className="w-6 h-6" />,
       color: 'bg-purple-500',
     },
     {
       id: 'ingredients',
       title: 'Relatório de Ingredientes',
       description: 'Uso e variação de preços dos ingredientes',
-      icon: <MixIcon className="w-6 h-6" />,
+      icon: <Beaker className="w-6 h-6" />,
       color: 'bg-orange-500',
     },
   ];
@@ -126,7 +125,7 @@ const ReportsManagement = () => {
                 </div>
                 <div className="flex items-end">
                   <Button className="w-full">
-                    <CalendarIcon className="w-4 h-4 mr-2" />
+                    <Calendar className="w-4 h-4 mr-2" />
                     Aplicar Filtros
                   </Button>
                 </div>
@@ -154,7 +153,7 @@ const ReportsManagement = () => {
                     onClick={() => handleGenerateReport(report.id)}
                     className="w-full"
                   >
-                    <DownloadIcon className="w-4 h-4 mr-2" />
+                    <Download className="w-4 h-4 mr-2" />
                     Gerar Relatório
                   </Button>
                 </CardContent>
@@ -182,7 +181,7 @@ const ReportsManagement = () => {
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm">
-                        <DownloadIcon className="w-4 h-4 mr-1" />
+                        <Download className="w-4 h-4 mr-1" />
                         Baixar
                       </Button>
                     </div>

@@ -1,38 +1,37 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  DashboardIcon, 
-  PersonIcon, 
-  MixIcon, 
-  BarChartIcon 
-} from '@radix-ui/react-icons';
+  LayoutDashboard, 
+  Users, 
+  Beaker, 
+  BarChart3 
+} from 'lucide-react';
 
 const AdvancedDashboard = () => {
   const stats = [
     {
       title: 'Clientes Ativos',
       value: '12',
-      icon: <PersonIcon className="w-6 h-6" />,
+      icon: <Users className="w-6 h-6" />,
       color: 'bg-blue-500',
     },
     {
       title: 'Ingredientes Cadastrados',
       value: '45',
-      icon: <MixIcon className="w-6 h-6" />,
+      icon: <Beaker className="w-6 h-6" />,
       color: 'bg-green-500',
     },
     {
       title: 'Formulações Realizadas',
       value: '28',
-      icon: <DashboardIcon className="w-6 h-6" />,
+      icon: <LayoutDashboard className="w-6 h-6" />,
       color: 'bg-orange-500',
     },
     {
       title: 'Relatórios Gerados',
       value: '8',
-      icon: <BarChartIcon className="w-6 h-6" />,
+      icon: <BarChart3 className="w-6 h-6" />,
       color: 'bg-purple-500',
     },
   ];

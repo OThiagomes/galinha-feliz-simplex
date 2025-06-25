@@ -1,19 +1,18 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  DashboardIcon,
-  PersonIcon,
-  MixIcon,
-  CalculatorIcon,
-  BarChartIcon,
-  GearIcon,
-  LightbulbIcon,
-  HamburgerMenuIcon,
-} from '@radix-ui/react-icons';
+  LayoutDashboard,
+  Users,
+  Beaker,
+  Calculator,
+  BarChart3,
+  Settings,
+  Lightbulb,
+  Menu,
+} from 'lucide-react';
 import AdvancedDashboard from './AdvancedDashboard';
 import ClientsManagement from './ClientsManagement';
 import IngredientsManagement from './IngredientsManagement';
@@ -34,14 +33,14 @@ const MainLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const menuItems: MenuItem[] = [
-    { key: 'dashboard', icon: <DashboardIcon className="w-5 h-5" />, label: 'Dashboard' },
-    { key: 'clients', icon: <PersonIcon className="w-5 h-5" />, label: 'Clientes' },
-    { key: 'ingredients', icon: <MixIcon className="w-5 h-5" />, label: 'Ingredientes' },
-    { key: 'formulation', icon: <CalculatorIcon className="w-5 h-5" />, label: 'Formulação Avançada' },
-    { key: 'minimal', icon: <LightbulbIcon className="w-5 h-5" />, label: 'Formulação Simplificada' },
-    { key: 'requirements', icon: <GearIcon className="w-5 h-5" />, label: 'Exigências Nutricionais' },
-    { key: 'reports', icon: <BarChartIcon className="w-5 h-5" />, label: 'Relatórios' },
-    { key: 'settings', icon: <GearIcon className="w-5 h-5" />, label: 'Configurações' },
+    { key: 'dashboard', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
+    { key: 'clients', icon: <Users className="w-5 h-5" />, label: 'Clientes' },
+    { key: 'ingredients', icon: <Beaker className="w-5 h-5" />, label: 'Ingredientes' },
+    { key: 'formulation', icon: <Calculator className="w-5 h-5" />, label: 'Formulação Avançada' },
+    { key: 'minimal', icon: <Lightbulb className="w-5 h-5" />, label: 'Formulação Simplificada' },
+    { key: 'requirements', icon: <Settings className="w-5 h-5" />, label: 'Exigências Nutricionais' },
+    { key: 'reports', icon: <BarChart3 className="w-5 h-5" />, label: 'Relatórios' },
+    { key: 'settings', icon: <Settings className="w-5 h-5" />, label: 'Configurações' },
   ];
 
   const renderContent = () => {
@@ -81,7 +80,7 @@ const MainLayout = () => {
               size="sm"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             >
-              <HamburgerMenuIcon className="w-4 h-4" />
+              <Menu className="w-4 h-4" />
             </Button>
           </div>
         </div>
