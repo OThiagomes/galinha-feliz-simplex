@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Calculator, 
   Zap, 
@@ -18,7 +18,9 @@ import {
   BarChart3,
   Sparkles,
   RefreshCw,
-  Brain
+  Brain,
+  Bot,
+  LineChart
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Client } from '@/types/client';
@@ -28,6 +30,8 @@ import { useClients } from '@/hooks/useClients';
 import { formulateWithAdvancedSimplex, SimplexResult } from '@/utils/simplexAdvanced';
 import IngredientConstraints from './IngredientConstraints';
 import AIFormulationInsights from './AIFormulationInsights';
+import AICostPredictor from './AICostPredictor';
+import AIOptimizationEngine from './AIOptimizationEngine';
 
 const FormulationInterface: React.FC = () => {
   const { clients } = useClients();
@@ -38,7 +42,7 @@ const FormulationInterface: React.FC = () => {
   const [constraints, setConstraints] = useState<IngredientConstraint[]>([]);
   const [result, setResult] = useState<SimplexResult | null>(null);
   const [isFormulating, setIsFormulating] = useState(false);
-  const [showAIInsights, setShowAIInsights] = useState(false);
+  const [activeAITab, setActiveAITab] = useState('insights');
 
   const availableIngredients = selectedClient ? 
     selectedClient.ingredients.filter(ing => ing.availability) : [];
@@ -169,18 +173,16 @@ const FormulationInterface: React.FC = () => {
               <Calculator className="w-8 h-8" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Formulação Avançada</h2>
-              <p className="text-blue-100">Algoritmo Simplex com validação nutricional e IA</p>
+              <h2 className="text-2xl font-bold">Formulação Avançada com IA</h2>
+              <p className="text-blue-100">Algoritmo Simplex + Inteligência Artificial NVIDIA</p>
             </div>
           </div>
-          <Button
-            onClick={() => setShowAIInsights(!showAIInsights)}
-            variant="ghost"
-            className="text-white hover:bg-white hover:bg-opacity-20"
-          >
-            <Brain className="w-5 h-5 mr-2" />
-            {showAIInsights ? 'Ocultar IA' : 'Mostrar IA'}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Badge variant="ghost" className="text-white border-white border-opacity-30">
+              <Bot className="w-4 h-4 mr-1" />
+              IA Ativa
+            </Badge>
+          </div>
         </div>
       </div>
 
@@ -275,14 +277,78 @@ const FormulationInterface: React.FC = () => {
         </Card>
       </div>
 
-      {/* IA Insights */}
-      {showAIInsights && selectedClient && selectedRequirement && (
-        <AIFormulationInsights
-          ingredients={availableIngredients}
-          requirements={selectedRequirement}
-          constraints={constraints}
-          currentFormulation={result}
-        />
+      {/* IA Modules */}
+      {selectedClient && selectedRequirement && (
+        <Card className="border-2 border-purple-200">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardTitle className="flex items-center gap-2 text-purple-700">
+              <Brain className="w-5 h-5" />
+              Módulos de Inteligência Artificial
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <Tabs value={activeAITab} onValueChange={setActiveAITab}>
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="insights" className="flex items-center gap-2">
+                  <Brain className="w-4 h-4" />
+                  Análise
+                </TabsTrigger>
+                <TabsTrigger value="prediction" className="flex items-center gap-2">
+                  <LineChart className="w-4 h-4" />
+                  Predição
+                </TabsTrigger>
+                <TabsTrigger value="optimization" className="flex items-center gap-2">
+                  <Zap className="w-4 h-4" />
+                  Otimização
+                </TabsTrigger>
+                <TabsTrigger value="history" className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" />
+                  Histórico
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="insights" className="mt-6">
+                <AIFormulationInsights
+                  ingredients={availableIngredients}
+                  requirements={selectedRequirement}
+                  constraints={constraints}
+                  currentFormulation={result}
+                />
+              </TabsContent>
+
+              <TabsContent value="prediction" className="mt-6">
+                <AICostPredictor
+                  ingredients={availableIngredients}
+                />
+              </TabsContent>
+
+              <TabsContent value="optimization" className="mt-6">
+                <AIOptimizationEngine
+                  ingredients={availableIngredients}
+                  requirements={selectedRequirement}
+                  currentFormulation={result}
+                />
+              </TabsContent>
+
+              <TabsContent value="history" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5" />
+                      Histórico de Análises IA
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8 text-gray-500">
+                      <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>Histórico de análises será exibido aqui após execução</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
       )}
 
       {/* Restrições de Ingredientes */}
