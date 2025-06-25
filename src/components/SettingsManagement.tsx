@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,9 @@ import {
   Upload,
   Save,
   RefreshCw,
-  CheckCircle
+  CheckCircle,
+  Brain,
+  Key
 } from 'lucide-react';
 
 interface SettingsConfig {
@@ -34,9 +35,14 @@ const SettingsManagement = () => {
     language: 'pt-BR',
     timezone: 'America/Sao_Paulo',
     
+    // Configurações de IA
+    nvidiaApiKey: '',
+    enableAI: true,
+    aiModelTemperature: 0.3,
+    aiMaxTokens: 2048,
+    
     // Configurações de Formulação
     defaultOptimization: 'min-cost',
-    enableAI: true,
     maxIterations: 1000,
     convergenceTolerance: 0.001,
     
@@ -150,6 +156,18 @@ const SettingsManagement = () => {
       ]
     },
     {
+      id: 'ai',
+      title: 'Inteligência Artificial',
+      icon: Brain,
+      settings: [
+        { key: 'nvidiaApiKey', label: 'NVIDIA API Key', type: 'password', 
+          description: 'Chave da API NVIDIA para análise inteligente de formulações' },
+        { key: 'enableAI', label: 'Habilitar IA', type: 'boolean' },
+        { key: 'aiModelTemperature', label: 'Temperatura do Modelo', type: 'number', step: 0.1, min: 0, max: 1 },
+        { key: 'aiMaxTokens', label: 'Max. Tokens', type: 'number' }
+      ]
+    },
+    {
       id: 'formulation',
       title: 'Formulação',
       icon: Database,
@@ -159,7 +177,6 @@ const SettingsManagement = () => {
           { value: 'max-margin', label: 'Maior Margem' },
           { value: 'best-conversion', label: 'Melhor Conversão' }
         ]},
-        { key: 'enableAI', label: 'Habilitar IA', type: 'boolean' },
         { key: 'maxIterations', label: 'Max. Iterações', type: 'number' },
         { key: 'convergenceTolerance', label: 'Tolerância de Convergência', type: 'number' }
       ]
@@ -214,14 +231,38 @@ const SettingsManagement = () => {
       case 'text':
       case 'number':
         return (
-          <Input
-            type={setting.type}
-            value={value || ''}
-            onChange={(e) => updateSetting(setting.key, 
-              setting.type === 'number' ? parseFloat(e.target.value) : e.target.value
+          <div className="space-y-1">
+            <Input
+              type={setting.type}
+              value={value || ''}
+              onChange={(e) => updateSetting(setting.key, 
+                setting.type === 'number' ? parseFloat(e.target.value) : e.target.value
+              )}
+              className="w-full"
+              step={setting.step}
+              min={setting.min}
+              max={setting.max}
+            />
+            {setting.description && (
+              <p className="text-xs text-gray-500">{setting.description}</p>
             )}
-            className="w-full"
-          />
+          </div>
+        );
+      
+      case 'password':
+        return (
+          <div className="space-y-1">
+            <Input
+              type="password"
+              value={value || ''}
+              onChange={(e) => updateSetting(setting.key, e.target.value)}
+              className="w-full"
+              placeholder="Insira sua chave da API NVIDIA"
+            />
+            {setting.description && (
+              <p className="text-xs text-gray-500">{setting.description}</p>
+            )}
+          </div>
         );
       
       case 'select':
@@ -301,6 +342,16 @@ const SettingsManagement = () => {
           <CheckCircle className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-800">
             Configurações salvas com sucesso!
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* IA Configuration Alert */}
+      {!settings.nvidiaApiKey && (
+        <Alert className="border-blue-300 bg-blue-50">
+          <Brain className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-blue-800">
+            <strong>Configure a IA:</strong> Adicione sua chave da API NVIDIA para habilitar análise inteligente de formulações.
           </AlertDescription>
         </Alert>
       )}

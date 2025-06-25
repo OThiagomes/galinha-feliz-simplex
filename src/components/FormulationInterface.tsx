@@ -17,7 +17,8 @@ import {
   Activity,
   BarChart3,
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  Brain
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Client } from '@/types/client';
@@ -26,6 +27,7 @@ import { useUniversalRequirements } from '@/hooks/useUniversalRequirements';
 import { useClients } from '@/hooks/useClients';
 import { formulateWithAdvancedSimplex, SimplexResult } from '@/utils/simplexAdvanced';
 import IngredientConstraints from './IngredientConstraints';
+import AIFormulationInsights from './AIFormulationInsights';
 
 const FormulationInterface: React.FC = () => {
   const { clients } = useClients();
@@ -36,6 +38,7 @@ const FormulationInterface: React.FC = () => {
   const [constraints, setConstraints] = useState<IngredientConstraint[]>([]);
   const [result, setResult] = useState<SimplexResult | null>(null);
   const [isFormulating, setIsFormulating] = useState(false);
+  const [showAIInsights, setShowAIInsights] = useState(false);
 
   const availableIngredients = selectedClient ? 
     selectedClient.ingredients.filter(ing => ing.availability) : [];
@@ -160,14 +163,24 @@ const FormulationInterface: React.FC = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 p-6 rounded-xl text-white">
-        <div className="flex items-center gap-3">
-          <div className="bg-white bg-opacity-20 p-3 rounded-lg">
-            <Calculator className="w-8 h-8" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white bg-opacity-20 p-3 rounded-lg">
+              <Calculator className="w-8 h-8" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">Formulação Avançada</h2>
+              <p className="text-blue-100">Algoritmo Simplex com validação nutricional e IA</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold">Formulação Avançada</h2>
-            <p className="text-blue-100">Algoritmo Simplex com validação nutricional completa</p>
-          </div>
+          <Button
+            onClick={() => setShowAIInsights(!showAIInsights)}
+            variant="ghost"
+            className="text-white hover:bg-white hover:bg-opacity-20"
+          >
+            <Brain className="w-5 h-5 mr-2" />
+            {showAIInsights ? 'Ocultar IA' : 'Mostrar IA'}
+          </Button>
         </div>
       </div>
 
@@ -261,6 +274,16 @@ const FormulationInterface: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* IA Insights */}
+      {showAIInsights && selectedClient && selectedRequirement && (
+        <AIFormulationInsights
+          ingredients={availableIngredients}
+          requirements={selectedRequirement}
+          constraints={constraints}
+          currentFormulation={result}
+        />
+      )}
 
       {/* Restrições de Ingredientes */}
       {selectedClient && selectedRequirement && (
