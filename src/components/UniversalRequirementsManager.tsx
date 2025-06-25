@@ -110,12 +110,12 @@ const UniversalRequirementsManager: React.FC = () => {
                   </div>
                   <div>
                     <Label>Fase</Label>
-                    <Select value={formData.phase} onValueChange={(value) => updateField('phase', value as NutritionalPhase)}>
+                    <Select value={formData.phase || 'custom'} onValueChange={(value) => updateField('phase', value as NutritionalPhase)}>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Selecione uma fase" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(PHASE_NAMES).map(([key, name]) => (
+                        {Object.entries(PHASE_NAMES).filter(([key]) => key && key.trim() !== '').map(([key, name]) => (
                           <SelectItem key={key} value={key}>{name}</SelectItem>
                         ))}
                       </SelectContent>
