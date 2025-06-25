@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,6 +54,7 @@ const RequirementsManager = () => {
     if (newRequirement.name.trim()) {
       addRequirement(newRequirement);
       setShowAddForm(false);
+      setActiveTab('list');
       setNewRequirement({
         ...newRequirement,
         name: '',
@@ -131,16 +131,16 @@ const RequirementsManager = () => {
               onValueChange={(value) => onUpdate('phase', value)}
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Selecione uma fase" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem disabled value="">-- Frango de Corte --</SelectItem>
+                <SelectItem value="frango-header" disabled>-- Frango de Corte --</SelectItem>
                 {phaseGroups.frango.map((phase) => (
                   <SelectItem key={phase} value={phase}>
                     {PHASE_NAMES[phase as NutritionalPhase]}
                   </SelectItem>
                 ))}
-                <SelectItem disabled value="">-- Poedeiras --</SelectItem>
+                <SelectItem value="poedeira-header" disabled>-- Poedeiras --</SelectItem>
                 {phaseGroups.poedeira.map((phase) => (
                   <SelectItem key={phase} value={phase}>
                     {PHASE_NAMES[phase as NutritionalPhase]}
